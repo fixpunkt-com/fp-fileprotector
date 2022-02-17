@@ -1,0 +1,43 @@
+<f:be.container>
+	<div style="margin: 20px;">
+		<h1>Verzeichnisschutz</h1>
+
+		<f:render partial="Rootline" arguments="{rootline : rootline, fileStorage : fileStorage, folder : folder}" />
+		<f:flashMessages />
+
+		<f:render section="main" />
+	</div>
+
+
+
+	<style>
+		.breadcrumbWrapper {
+			padding: 10px 20px;
+			border-radius: 5px;
+			background: lightblue;
+		}
+		.breadcrumb {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+		}
+		.breadcrumb.rootline {
+			margin-top: 5px;
+		}
+		.breadcrumb li {
+			float: left;
+			width: auto;
+		}
+		.breadcrumb li:last-child {
+			font-weight: bold;
+		}
+		.breadcrumb li:after {
+			content: '/';
+			margin: 0 10px;
+		}
+		.breadcrumb li:last-child:after {
+			content: '';
+			margin: 0;
+		}
+	</style>
+</f:be.container>

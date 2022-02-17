@@ -1,0 +1,30 @@
+<div class="breadcrumbWrapper">
+    <ol class="breadcrumb storages clearfix">
+        <li><f:link.action controller="FileStorage" action="list">Alle Storages</f:link.action></li>
+        <f:if condition="{fileStorage}">
+            <f:render section="storage" arguments="{fileStorage : fileStorage}" />
+        </f:if>
+        <f:if condition="{folder}">
+            <f:render section="storage" arguments="{fileStorage : folder.storage}" />
+        </f:if>
+    </ol>
+
+    <f:if condition="{folder}">
+        <ol class="breadcrumb rootline clearfix">
+            <f:if condition="rootline">
+                <f:for each="{folder.rootline}" as="rootline" iteration="iter">
+                    <f:render section="folder" arguments="{folder : rootline}" />
+                </f:for>
+            </f:if>
+        </ol>
+    </f:if>
+</div>
+
+
+<f:section name="storage">
+    <li><f:link.action controller="FileStorage" action="show" arguments="{fileStorageUid : fileStorage.uid}">{fileStorage.name}</f:link.action></li>
+</f:section>
+
+<f:section name="folder">
+    <li><f:link.action controller="Folder" action="show" arguments="{combinedIdentifier : folder.combinedIdentifier}"><f:if condition="{folder.name}"><f:then>{folder.name}</f:then><f:else><i class="fa fa-fw fa-home"></i> <span class="small">(root)</span></f:else></f:if></f:link.action></li>
+</f:section>
