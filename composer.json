@@ -1,0 +1,28 @@
+{
+  "name": "fixpunkt/fp-fileprotector",
+  "type": "typo3-cms-extension",
+  "description": "",
+  "authors": [
+    {
+      "name": "Yannik Börgener",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "typo3/cms-core": "^10.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "Fixpunkt\\FpFileprotector\\": "Classes"
+    }
+  },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "fp_fileprotector"
+    }
+  },
+  "replace": {
+    "fixpunkt/fp_fileprotector": "self.version",
+    "typo3-ter/fp_fileprotector": "self.version"
+  }
+}
