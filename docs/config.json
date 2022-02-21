@@ -1,0 +1,15 @@
+{
+  "title": "fp-fileprotector",
+  "tagline": "Zugriffsschutz für FileStorages.",
+  "author": "fixpunkt werbeagentur",
+  "html": {
+    "buttons": {
+      "Referenzen anzeigen": "//fixpunkt.com"
+    },
+    "links": {
+      "fixpunkt": "//fixpunkt.com"
+    },
+    "powered_by": "Powered by Daux.io"
+  },
+  "language": "de"
+}
