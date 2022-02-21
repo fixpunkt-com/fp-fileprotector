@@ -81,6 +81,7 @@ class ProtectionController extends ActionController {
     public function editAction(Protection $protection) : void {
         $this -> view -> assignMultiple([
             'protection' => $protection,
+            'folder' => $protection -> getFolderObject(),
             'userGroups' => $this -> userGroupRepository -> findAll(),
             'users' => $this -> userRepository -> findAll()
         ]);

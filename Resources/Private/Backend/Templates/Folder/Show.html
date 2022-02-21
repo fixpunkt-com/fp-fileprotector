@@ -91,13 +91,16 @@
             <tr>
                 <th>Name</th>
                 <th><f:translate key="tx_fpfileprotector_domain_model_protection" /></th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
             <f:for each="{folder.subfolders}" as="subfolder">
                 <tr>
                     <td>{subfolder.name}</td>
-                    <td></td>
+                    <td>
+                        <!-- ToDo -->
+                    </td>
                     <td class="text-right">
                         <f:link.action action="show" arguments="{combinedIdentifier : subfolder.combinedIdentifier}" class="btn btn-default">
                             <i class="fa fa-fw fa-eye"></i>
