@@ -35,7 +35,7 @@ class ProtectionRepository extends Repository {
      */
     public function getProtection(FolderInterface $folder, bool $recursive = true) : ?Protection {
         $protection = $this -> findOneByFolder($folder);
-        if(!$protection && $recursive && $folder -> getParentFolder()) {
+        if(!$protection && $recursive && $folder -> hasParentFolder()) {
             return $this -> getProtection($folder -> getParentFolder());
         }
         return $protection;

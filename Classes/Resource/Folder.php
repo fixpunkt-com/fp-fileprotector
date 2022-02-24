@@ -18,6 +18,15 @@ use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
  * Diese Klasse ist NICHT in TCA definiert sondern dient nur zum einfacheren Arbeiten mit den Storages.
  */
 class Folder extends Core\Folder {
+    // Override functions
+    /**
+     * @return ResourceStorage
+     */
+    public function getStorage() : ResourceStorage {
+        return parent::getStorage();
+    }
+
+    // New functions
     /**
      * Gibt den Protection dieses Ordners oder seine übergeordneten Ordner zurück.
      * @return Protection|null
@@ -38,13 +47,6 @@ class Folder extends Core\Folder {
     }
 
     /**
-     * @return ResourceStorage
-     */
-    public function getStorage() : ResourceStorage {
-        return parent::getStorage();
-    }
-
-    /**
      * Prüft, ob es sich bei dem Ordner um den RootLevelFolder handelt.
      * @return bool
      */
@@ -53,14 +55,10 @@ class Folder extends Core\Folder {
     }
 
     /**
-     * Gibt den übergeordneten Ordner zurück, wenn er existiert.
-     * @return Folder|null
+     * @return bool
      */
-    public function getParentFolder() : ?Folder {
-        if($this -> isRootLevelFolder()) {
-            return null;
-        }
-        return parent::getParentFolder();
+    public function hasParentFolder() : bool {
+        return !$this -> isRootLevelFolder();
     }
 
     /**
@@ -84,7 +82,7 @@ class Folder extends Core\Folder {
      * @return array
      */
     public function getRootline() : array {
-        if($this -> getParentFolder()) {
+        if($this -> hasParentFolder()) {
             $childFolders = $this -> getParentFolder() -> getRootline();
             $childFolders[] = $this;
             return $childFolders;
