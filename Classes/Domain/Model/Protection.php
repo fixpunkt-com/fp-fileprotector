@@ -169,7 +169,7 @@ class Protection extends AbstractEntity {
                 }
 
                 // Benutzergruppen überprüfen
-                foreach($feUser -> getUsergroup() as $userGroup) {
+                foreach($frontendUserUtility -> getUsergroups($feUser) as $userGroup) {
                     if($this -> getUserGroups() -> contains($userGroup)) {
                         return true;
                     }
