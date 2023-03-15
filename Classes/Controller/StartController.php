@@ -12,7 +12,7 @@ class StartController extends ActionController {
      * @throws StopActionException
      */
     public function startAction() : void {
-        if($_GET["id"]) {
+        if(key_exists("id", $_GET) && $_GET["id"]) {
             // Irgendein Ordner ist ausgewählt
             $this -> redirect('show', 'Folder', null, ['combinedIdentifier' => $_GET["id"]]);
         } else {
