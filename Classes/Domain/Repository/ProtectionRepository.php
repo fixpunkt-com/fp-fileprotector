@@ -70,6 +70,11 @@ class ProtectionRepository extends Repository {
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $dataMapper = $objectManager->get(DataMapper::class);
         $protections = $dataMapper->map(Protection::class, $statement->fetchAll());
-        return count($protections) ? $protections[0] : null;
+        $protection = count($protections) ? $protections[0] : null;
+
+        if(!$protection && $folder -> hasParentFolder()) {
+            return self::getProtectionStatic($folder -> getParentFolder());
+        }
+        return $protection;
     }
 }
