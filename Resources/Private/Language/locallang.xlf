@@ -40,7 +40,7 @@
 				<source>Muss im Frontend eingeloggt sein</source>
 			</trans-unit>
 			<trans-unit id="tx_fpfileprotector_domain_model_protection.user_groups">
-				<source>Benutzergruppen</source>
+				<source>Benutzer:innen-Gruppen</source>
 			</trans-unit>
 			<trans-unit id="tx_fpfileprotector_domain_model_protection.users">
 				<source>Benutzer:innen</source>

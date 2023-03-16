@@ -74,7 +74,9 @@ class Folder extends Core\Folder {
      * @return bool
      */
     public function isAccessible() : bool {
-        return $this -> getProtection() && $this -> getStorage() -> isProtectedByDefault() || !$this -> getStorage() -> isProtectedByDefault();
+        return
+            $this -> getProtection() && $this -> getStorage() -> isProtectedByDefault() && $this -> isProtected() ||
+            !$this -> getStorage() -> isProtectedByDefault();
     }
 
     /**

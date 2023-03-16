@@ -1,7 +1,6 @@
 <?php
 namespace Fixpunkt\FpFileprotector\Middleware;
 
-use Fixpunkt\FpFileprotector\Domain\Model\Protection;
 use Fixpunkt\FpFileprotector\Domain\Repository\ProtectionRepository;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -10,27 +9,11 @@ use Psr\Http\Server\RequestHandlerInterface;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Http\Stream;
 use TYPO3\CMS\Core\Resource\Folder;
-use TYPO3\CMS\Core\Resource\FolderInterface;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Resource\StorageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 class AccessMiddleware implements MiddlewareInterface {
-
-    /** @var ProtectionRepository  */
-    protected ProtectionRepository $protectionRepository;
-
-    /**
-     * ToDo: Über DI lösen
-     */
-    public function __construct() {
-        /** @var ObjectManager $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this -> protectionRepository = $objectManager -> get(ProtectionRepository::class);
-    }
-
     public function process(
         ServerRequestInterface $request,
         RequestHandlerInterface $handler
@@ -40,6 +23,7 @@ class AccessMiddleware implements MiddlewareInterface {
             !key_exists("tx_fpfileprotector", $request -> getQueryParams()) ||
             !key_exists("check", $request -> getQueryParams()["tx_fpfileprotector"]) ||
             !$request -> getQueryParams()["tx_fpfileprotector"]["check"]) {
+
             return $handler->handle($request);
         }
 
@@ -74,7 +58,7 @@ class AccessMiddleware implements MiddlewareInterface {
         }
 
         // Zugriffsberechtigungen ermitteln
-        $protection = $this -> protectionRepository -> getProtection($folder);
+        $protection = ProtectionRepository::getProtectionStatic($folder);
         if(!$protection && !$protectedByDefault || $protection && $protection -> isGranted()) {
             return $this -> releaseFile($storage, $filePath."/".$fileName);
         }

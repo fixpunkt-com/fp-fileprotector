@@ -78,8 +78,16 @@
                     </f:if>
                 </f:then>
                 <f:else>
-                    Für diesen Ordner ist noch keinen Zugriffsschutz definiert.<br>
-                    Da der Storage so konfiguriert ist, dass Ordner ohne Zugriffsschutz gesperrt sind, kann niemand auf den Inhalt dieses Ordners zugreifen.
+                    <f:if condition="{folder.protection}">
+                        <f:then>
+                            Für diesen Ordner ist zwar ein Zugriffsschutz definiert, dieser enthält aber keine Zugriffsbedingungen.<br>
+                            Da der Storage so konfiguriert ist, dass Ordner ohne Zugriffsschutz gesperrt sind, kann niemand auf den Inhalt dieses Ordners zugreifen.
+                        </f:then>
+                        <f:else>
+                            Für diesen Ordner ist noch keinen Zugriffsschutz definiert.<br>
+                            Da der Storage so konfiguriert ist, dass Ordner ohne Zugriffsschutz gesperrt sind, kann niemand auf den Inhalt dieses Ordners zugreifen.
+                        </f:else>
+                    </f:if>
                 </f:else>
             </f:if>
         </div>

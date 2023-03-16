@@ -7,5 +7,5 @@ return [
                 'typo3/cms-frontend/page-resolver',
             ]
         ],
-    ],
+    ]
 ];
