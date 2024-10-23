@@ -18,9 +18,7 @@ class FileStorageRepository {
         /** @var QueryBuilder $queryBuilder */
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable('sys_file_storage')->createQueryBuilder();
         $query = $queryBuilder
-            -> select('uid')
-            -> from('sys_file_storage')
-            -> execute();
+            -> select('uid')->from('sys_file_storage')->executeQuery();
 
         $fileStorages = [];
         $resourceFactory = GeneralUtility::makeInstance(ResourceFactory::class);
@@ -55,10 +53,6 @@ class FileStorageRepository {
         $query = $queryBuilder
             -> update('sys_file_storage')
             -> set('protected', $fileStorage -> isProtected())
-            -> set('protected_by_default', $fileStorage -> isProtectedByDefault())
-            ->where(
-                $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($fileStorage -> getUid()))
-            )
-            -> execute();
+            -> set('protected_by_default', $fileStorage -> isProtectedByDefault())->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($fileStorage -> getUid())))->executeStatement();
     }
 }

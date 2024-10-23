@@ -2,12 +2,11 @@
 
 namespace Fixpunkt\FpFileprotector\Utility;
 
+use Fixpunkt\FpFileprotector\Domain\Model\FrontendUser;
+use Fixpunkt\FpFileprotector\Domain\Model\FrontendUserGroup;
+use Fixpunkt\FpFileprotector\Domain\Repository\FrontendUserRepository;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
-use TYPO3\CMS\Extbase\Domain\Model\FrontendUserGroup;
-use TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 class FrontendUserUtility {
@@ -22,10 +21,8 @@ class FrontendUserUtility {
             $context = GeneralUtility::makeInstance(Context::class);
             $userUid = $context->getPropertyFromAspect('frontend.user', 'id');
 
-            /** @var ObjectManager $objectManager */
-            $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
             /** @var FrontendUserRepository $frontendUserRepository */
-            $frontendUserRepository = $objectManager -> get(FrontendUserRepository::class);
+            $frontendUserRepository = GeneralUtility::makeInstance(FrontendUserRepository::class);
             return $frontendUserRepository -> findByIdentifier($userUid);
         } catch(\Exception $e) {
             return null;

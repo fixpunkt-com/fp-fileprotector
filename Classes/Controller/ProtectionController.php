@@ -6,8 +6,6 @@ use Fixpunkt\FpFileprotector\Domain\Model\Protection;
 use Fixpunkt\FpFileprotector\Domain\Repository\FolderRepository;
 use Fixpunkt\FpFileprotector\Domain\Repository\ProtectionRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Domain\Repository\FrontendUserGroupRepository;
-use TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
 use TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException;
@@ -16,6 +14,8 @@ use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Form\Service\TranslationService;
+use TYPO3\CMS\FrontendLogin\Domain\Repository\FrontendUserGroupRepository;
+use TYPO3\CMS\FrontendLogin\Domain\Repository\FrontendUserRepository;
 
 class ProtectionController extends ActionController {
     /** @var ProtectionRepository  */
@@ -49,12 +49,13 @@ class ProtectionController extends ActionController {
      * Stellt eine Oberfläche zum Erstellen eines Ordnerschutzes bereit.
      * @return void
      */
-    public function newAction(string $combinedIdentifier) : void {
+    public function newAction(string $combinedIdentifier) : \Psr\Http\Message\ResponseInterface {
         $this -> view -> assignMultiple([
             'folder' => $this -> folderRepository -> findOneByCombinedIdentifier($combinedIdentifier),
             'userGroups' => $this -> userGroupRepository -> findAll(),
             'users' => $this -> userRepository -> findAll(),
         ]);
+        return $this->htmlResponse();
     }
 
     /**
@@ -78,13 +79,14 @@ class ProtectionController extends ActionController {
      * @param Protection $protection
      * @return void
      */
-    public function editAction(Protection $protection) : void {
+    public function editAction(Protection $protection) : \Psr\Http\Message\ResponseInterface {
         $this -> view -> assignMultiple([
             'protection' => $protection,
             'folder' => $protection -> getFolderObject(),
             'userGroups' => $this -> userGroupRepository -> findAll(),
             'users' => $this -> userRepository -> findAll()
         ]);
+        return $this->htmlResponse();
     }
 
     /**

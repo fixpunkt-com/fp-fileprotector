@@ -6,8 +6,6 @@ use Fixpunkt\FpFileprotector\Domain\Repository\FolderRepository;
 use Fixpunkt\FpFileprotector\Resource\Folder;
 use Fixpunkt\FpFileprotector\Utility\FrontendUserUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
-use TYPO3\CMS\Extbase\Domain\Model\FrontendUserGroup;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 

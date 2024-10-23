@@ -29,10 +29,11 @@ class FileStorageController extends ActionController {
      * @return void
      * @throws StopActionException
      */
-    public function listAction() : void {
+    public function listAction() : \Psr\Http\Message\ResponseInterface {
         $this -> view -> assignMultiple([
             'fileStorages' => $this -> fileStorageRepository -> findAll()
         ]);
+        return $this->htmlResponse();
     }
 
     /**
@@ -40,9 +41,10 @@ class FileStorageController extends ActionController {
      * @param int $fileStorageUid
      * @return void
      */
-    public function editAction(int $fileStorageUid) : void {
+    public function editAction(int $fileStorageUid) : \Psr\Http\Message\ResponseInterface {
         /** @var ResourceStorage $fileStorage */
         $this -> view -> assign('fileStorage', $this -> fileStorageRepository -> findByIdentifier($fileStorageUid));
+        return $this->htmlResponse();
     }
 
     public function updateAction(int $fileStorageUid, bool $protected, bool $protectedByDefault) : void {
@@ -74,8 +76,9 @@ class FileStorageController extends ActionController {
      * @param int $fileStorageUid
      * @return void
      */
-    public function showAction(int $fileStorageUid) : void {
+    public function showAction(int $fileStorageUid) : \Psr\Http\Message\ResponseInterface {
         $this -> view -> assign('fileStorage', $this -> fileStorageRepository -> findByIdentifier($fileStorageUid));
+        return $this->htmlResponse();
     }
 
 }

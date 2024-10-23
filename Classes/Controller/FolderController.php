@@ -27,10 +27,11 @@ class FolderController extends ActionController {
      * @param string $combinedIdentifier
      * @return void
      */
-    public function showAction(string $combinedIdentifier) : void {
+    public function showAction(string $combinedIdentifier) : \Psr\Http\Message\ResponseInterface {
         $this -> view -> assignMultiple([
             'folder' => $this -> folderRepository -> findOneByCombinedIdentifier($combinedIdentifier)
         ]);
+        return $this->htmlResponse();
     }
 
 }

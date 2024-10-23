@@ -1,5 +1,5 @@
 <?php
-defined('TYPO3_MODE') or die();
+defined('TYPO3') or die();
 
 // Feld definieren
 $tempColumns = [
@@ -10,12 +10,6 @@ $tempColumns = [
         'config' => [
             'type' => 'check',
             'renderType' => 'checkboxToggle',
-            'items' => [
-                [
-                    0 => '',
-                    1 => '',
-                ]
-            ],
         ]
     ],
     'protected_by_default' => [
@@ -25,12 +19,6 @@ $tempColumns = [
         'config' => [
             'type' => 'check',
             'renderType' => 'checkboxToggle',
-            'items' => [
-                [
-                    0 => '',
-                    1 => '',
-                ]
-            ],
         ]
     ]
 ];

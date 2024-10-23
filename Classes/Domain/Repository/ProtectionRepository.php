@@ -60,15 +60,10 @@ class ProtectionRepository extends Repository {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_fpfileprotector_domain_model_protection');
         $statement = $queryBuilder
             ->select('*')
-            ->from('tx_fpfileprotector_domain_model_protection')
-            ->where(
-                $queryBuilder->expr()->eq('folder', $queryBuilder->createNamedParameter($folder -> getIdentifier()))
-            )
-            ->execute();
+            ->from('tx_fpfileprotector_domain_model_protection')->where($queryBuilder->expr()->eq('folder', $queryBuilder->createNamedParameter($folder -> getIdentifier())))->executeQuery();
 
         // Convert data to object and return
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $dataMapper = $objectManager->get(DataMapper::class);
+        $dataMapper = GeneralUtility::makeInstance(DataMapper::class);
         $protections = $dataMapper->map(Protection::class, $statement->fetchAll());
         $protection = count($protections) ? $protections[0] : null;
 

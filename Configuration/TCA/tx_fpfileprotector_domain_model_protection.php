@@ -5,7 +5,6 @@ return array(
         'label' => 'folder',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
-        'cruser_id' => 'cruser_id',
         'delete' => 'deleted',
         'searchFields' => 'folder',
         'iconfile' => 'EXT:fp_fileprotector/Resources/Public/Icons/Models/tx_fpfileprotector_domain_model_protection.svg'
@@ -35,7 +34,7 @@ return array(
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
-                    ['', 0]
+                    ['label' => '', 'value' => 0]
                 ],
                 'foreign_table' => 'sys_file_storage',
                 'foreign_table_where' => 'AND {#sys_file_storage}.{#protected} = 1',
@@ -62,12 +61,6 @@ return array(
             'config' => [
                 'type' => 'check',
                 'renderType' => 'checkboxToggle',
-                'items' => [
-                    [
-                        0 => '',
-                        1 => '',
-                    ]
-                ],
             ]
         ],
         'be_login' => [
@@ -76,12 +69,6 @@ return array(
             'config' => [
                 'type' => 'check',
                 'renderType' => 'checkboxToggle',
-                'items' => [
-                    [
-                        0 => '',
-                        1 => '',
-                    ]
-                ],
             ]
         ],
 		'user_groups' => array(
