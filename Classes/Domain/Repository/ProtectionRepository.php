@@ -10,10 +10,18 @@ use TYPO3\CMS\Core\Resource\FolderInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper;
+use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 class ProtectionRepository extends Repository {
+
+    protected $objectType = Protection::class;
+
+    public function __construct() {
+        $this->persistenceManager = GeneralUtility::makeInstance(PersistenceManager::class);
+    }
+
     /**
      * Findet eine Protection für einen bestimmten Ordner.
      * @param FolderInterface $folder
@@ -23,10 +31,10 @@ class ProtectionRepository extends Repository {
         $query = $this -> createQuery();
         $query -> getQuerySettings() -> setRespectStoragePage(false);
         $query -> matching(
-            $query -> logicalAnd([
+            $query -> logicalAnd(
                 $query -> equals('storage', $folder -> getStorage() -> getUid()),
                 $query -> equals('folder', $folder -> getIdentifier())
-            ])
+            )
         );
         $results = $query -> execute();
 
@@ -64,7 +72,7 @@ class ProtectionRepository extends Repository {
 
         // Convert data to object and return
         $dataMapper = GeneralUtility::makeInstance(DataMapper::class);
-        $protections = $dataMapper->map(Protection::class, $statement->fetchAll());
+        $protections = $dataMapper->map(Protection::class, $statement->fetchAllAssociative());
         $protection = count($protections) ? $protections[0] : null;
 
         if(!$protection && $folder -> hasParentFolder()) {

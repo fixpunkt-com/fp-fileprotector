@@ -4,18 +4,34 @@ namespace Fixpunkt\FpFileprotector\Controller;
 
 use Fixpunkt\FpFileprotector\Domain\Model\Protection;
 use Fixpunkt\FpFileprotector\Domain\Repository\FolderRepository;
+use Fixpunkt\FpFileprotector\Domain\Repository\FrontendUserGroupRepository;
+use Fixpunkt\FpFileprotector\Domain\Repository\FrontendUserRepository;
 use Fixpunkt\FpFileprotector\Domain\Repository\ProtectionRepository;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\StreamFactoryInterface;
+use TYPO3\CMS\Backend\Template\ModuleTemplate;
+use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
+use TYPO3\CMS\Core\Crypto\HashService;
+use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\View\ViewFactoryInterface;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use TYPO3\CMS\Extbase\Mvc\Controller\MvcPropertyMappingConfigurationService;
 use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
+use TYPO3\CMS\Extbase\Mvc\View\ViewResolverInterface;
 use TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException;
 use TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
+use TYPO3\CMS\Extbase\Property\PropertyMapper;
+use TYPO3\CMS\Extbase\Reflection\ReflectionService;
+use TYPO3\CMS\Extbase\Service\ExtensionService;
+use TYPO3\CMS\Extbase\Service\FileHandlingService;
 use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+use TYPO3\CMS\Extbase\Validation\ValidatorResolver;
 use TYPO3\CMS\Form\Service\TranslationService;
-use TYPO3\CMS\FrontendLogin\Domain\Repository\FrontendUserGroupRepository;
-use TYPO3\CMS\FrontendLogin\Domain\Repository\FrontendUserRepository;
 
 class ProtectionController extends ActionController {
     /** @var ProtectionRepository  */
@@ -27,13 +43,32 @@ class ProtectionController extends ActionController {
     /** @var FolderRepository  */
     protected FolderRepository $folderRepository;
 
-    /**
-     * @param ProtectionRepository $protectionRepository
-     * @param FrontendUserGroupRepository $userGroupRepository
-     * @param FrontendUserRepository $userRepository
-     * @param FolderRepository $folderRepository
-     */
-    public function __construct(ProtectionRepository $protectionRepository, FrontendUserGroupRepository $userGroupRepository, FrontendUserRepository $userRepository, FolderRepository $folderRepository) {
+    /** @var ModuleTemplateFactory  */
+    protected ModuleTemplateFactory $moduleTemplateFactory;
+
+    public function __construct(
+        ModuleTemplateFactory $moduleTemplateFactory,
+
+        ProtectionRepository $protectionRepository,
+        FrontendUserGroupRepository $userGroupRepository,
+        FrontendUserRepository $userRepository,
+        FolderRepository $folderRepository,
+
+        ResponseFactoryInterface $responseFactory,
+        StreamFactoryInterface $streamFactory,
+        ConfigurationManagerInterface $configurationManager,
+        ValidatorResolver $validatorResolver,
+        ViewResolverInterface $viewResolver,
+        ViewFactoryInterface $viewFactory,
+        ReflectionService $reflectionService,
+        HashService $hashService,
+        MvcPropertyMappingConfigurationService $mvcPropertyMappingConfigurationService,
+        EventDispatcherInterface $eventDispatcher,
+        FileHandlingService $fileHandlingService,
+        PropertyMapper $propertyMapper,
+        FlashMessageService $flashMessageService,
+        ExtensionService $extensionService,
+    ) {
         $this -> protectionRepository = $protectionRepository;
         $this -> userGroupRepository = $userGroupRepository;
         $this -> userRepository = $userRepository;
@@ -43,6 +78,24 @@ class ProtectionController extends ActionController {
         $querySettings -> setRespectStoragePage(false);
         $this -> userGroupRepository -> setDefaultQuerySettings($querySettings);
         $this -> userRepository -> setDefaultQuerySettings($querySettings);
+
+        // Explizit die inject-Methoden aufrufen, da Symfony das nicht mehr tut
+        $this->injectResponseFactory($responseFactory);
+        $this->injectStreamFactory($streamFactory);
+        $this->injectConfigurationManager($configurationManager);
+        $this->injectValidatorResolver($validatorResolver);
+        $this->injectViewResolver($viewResolver);
+        $this->injectViewFactory($viewFactory);
+        $this->injectReflectionService($reflectionService);
+        $this->injectHashService($hashService);
+        $this->injectMvcPropertyMappingConfigurationService($mvcPropertyMappingConfigurationService);
+        $this->injectEventDispatcher($eventDispatcher);
+        $this->injectFileHandlingService($fileHandlingService);
+        $this->injectPropertyMapper($propertyMapper);
+        $this->injectInternalFlashMessageService($flashMessageService);
+        $this->injectInternalExtensionService($extensionService);
+
+        $this->moduleTemplateFactory = $moduleTemplateFactory;
     }
 
     /**
@@ -50,28 +103,32 @@ class ProtectionController extends ActionController {
      * @return void
      */
     public function newAction(string $combinedIdentifier) : \Psr\Http\Message\ResponseInterface {
-        $this -> view -> assignMultiple([
+        $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+
+        $moduleTemplate -> assignMultiple([
+            'protection' => GeneralUtility::makeInstance(Protection::class),
             'folder' => $this -> folderRepository -> findOneByCombinedIdentifier($combinedIdentifier),
             'userGroups' => $this -> userGroupRepository -> findAll(),
             'users' => $this -> userRepository -> findAll(),
         ]);
-        return $this->htmlResponse();
+
+        return $moduleTemplate->renderResponse("Protection/New");
     }
 
     /**
      * Legt einen neuen Ordnerschutz an.
      * @param Protection $protection
-     * @return void
+     * @return \Psr\Http\Message\ResponseInterface
      * @throws StopActionException
      * @throws IllegalObjectTypeException
      */
-    public function createAction(Protection $protection) : void {
+    public function createAction(Protection $protection) {
         $this -> protectionRepository -> add($protection);
         $this -> addFlashMessage(LocalizationUtility::translate(
             'tx_fpfileprotector_domain_model_protection.flashmessages.created',
             'FpFileprotector'
         ));
-        $this -> redirect('show','Folder', null, ['combinedIdentifier' => $protection -> getFolderObject() -> getCombinedIdentifier()]);
+        return $this -> redirect('show','Folder', null, ['combinedIdentifier' => $protection -> getFolderObject() -> getCombinedIdentifier()]);
     }
 
     /**
@@ -80,45 +137,48 @@ class ProtectionController extends ActionController {
      * @return void
      */
     public function editAction(Protection $protection) : \Psr\Http\Message\ResponseInterface {
-        $this -> view -> assignMultiple([
+        $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+
+        $moduleTemplate -> assignMultiple([
             'protection' => $protection,
             'folder' => $protection -> getFolderObject(),
             'userGroups' => $this -> userGroupRepository -> findAll(),
             'users' => $this -> userRepository -> findAll()
         ]);
-        return $this->htmlResponse();
+
+        return $moduleTemplate->renderResponse("Protection/Edit");
     }
 
     /**
      * @param Protection $protection
-     * @return void
+     * @return \Psr\Http\Message\ResponseInterface
      * @throws StopActionException
      * @throws IllegalObjectTypeException
      * @throws UnknownObjectException
      */
-    public function updateAction(Protection $protection) : void {
+    public function updateAction(Protection $protection) {
         $this -> protectionRepository -> update($protection);
         $this -> addFlashMessage(LocalizationUtility::translate(
             'tx_fpfileprotector_domain_model_protection.flashmessages.updated',
             'FpFileprotector'
         ));
-        $this -> redirect('show','Folder', null, ['combinedIdentifier' => $protection -> getFolderObject() -> getCombinedIdentifier()]);
+        return $this -> redirect('show','Folder', null, ['combinedIdentifier' => $protection -> getFolderObject() -> getCombinedIdentifier()]);
     }
 
     /**
      * Entfernt einen Ordnerschutz.
      * @param Protection $protection
-     * @return void
+     * @return \Psr\Http\Message\ResponseInterface
      * @throws StopActionException
      * @throws IllegalObjectTypeException
      */
-    public function deleteAction(Protection $protection) : void {
+    public function deleteAction(Protection $protection) {
         $this -> protectionRepository -> remove($protection);#
         $this -> addFlashMessage(LocalizationUtility::translate(
             'tx_fpfileprotector_domain_model_protection.flashmessages.deleted',
             'FpFileprotector'
         ));
-        $this -> redirect('show','Folder', null, ['combinedIdentifier' => $protection -> getFolderObject() -> getCombinedIdentifier()]);
+        return $this -> redirect('show','Folder', null, ['combinedIdentifier' => $protection -> getFolderObject() -> getCombinedIdentifier()]);
     }
 
 }

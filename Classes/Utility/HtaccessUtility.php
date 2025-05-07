@@ -4,6 +4,7 @@ namespace Fixpunkt\FpFileprotector\Utility;
 
 use Fixpunkt\FpFileprotector\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 class HtaccessUtility {
@@ -99,7 +100,7 @@ class HtaccessUtility {
      * @return array
      */
     private function getHtaccessTemplate() : array {
-        $templatePath = Environment::getPublicPath()."/typo3conf/ext/fp_fileprotector/Resources/Private/htaccess.txt";
+        $templatePath = ExtensionManagementUtility::extPath('fp_fileprotector') . "Resources/Private/htaccess.txt";
         $lines = [];
         $handle = @fopen($templatePath, "r");
         if ($handle)
@@ -137,7 +138,7 @@ class HtaccessUtility {
                 }
                 // Wir befinden uns mitten in einer begutachtung
                 if($templateLine >= 0) {
-                    if($buffer == $template[$templateLine]) {
+                    if(key_exists($templateLine, $template) && $buffer == $template[$templateLine]) {
                         $templateLine++;
                     } else {
                         $templateLine = -1;
@@ -145,7 +146,7 @@ class HtaccessUtility {
                     }
                 }
                 // Ist diese Zeile der Start?
-                if($templateLine < 0 && $buffer == $template[0]) {
+                if(key_exists(0, $template) && $templateLine < 0 && $buffer == $template[0]) {
                     $firstLine = $i;
                     $templateLine = 1;
                 }

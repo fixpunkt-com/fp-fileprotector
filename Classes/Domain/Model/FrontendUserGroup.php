@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace Fixpunkt\FpFileprotector\Domain\Model;
 
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
+use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 class FrontendUserGroup extends AbstractEntity
 {
@@ -11,9 +13,9 @@ class FrontendUserGroup extends AbstractEntity
      * Title
      *
      * @var string
-     * @Extbase\Validate("NotEmpty")
-     * @Extbase\Validate("StringLength", options={"maximum": 50})
      */
+    #[Extbase\Validate(['validator' => 'NotEmpty'])]
+    #[Extbase\Validate(['validator' => 'StringLength', 'options' => ['maximum' => 50]])]
     protected ?string $title;
 
     /**
@@ -26,13 +28,30 @@ class FrontendUserGroup extends AbstractEntity
     /**
      * Subgroups
      *
-     * @var ObjectStorage<FrontendUserGroup>
+     * @var null|ObjectStorage<FrontendUserGroup>
      */
     protected ?ObjectStorage $subgroups;
 
+
+    /**
+     * @param ObjectStorage|null $subgroups
+     */
+    public function setSubgroups(?ObjectStorage $subgroups): void
+    {
+        $this->subgroups = $subgroups;
+    }
+
+    /**
+     * @return ObjectStorage|null
+     */
+    public function getSubgroups(): ?ObjectStorage
+    {
+        return $this->subgroups;
+    }
+
     public function initializeObject()
     {
-
+        $this->subgroups = new ObjectStorage();
     }
 
     public function getTitle(): ?string
@@ -54,17 +73,6 @@ class FrontendUserGroup extends AbstractEntity
     {
         $this->description = $description;
     }
-
-    public function getSubgroup(): ?ObjectStorage
-    {
-        return $this->subgroups;
-    }
-
-    public function setSubgroup(?ObjectStorage $subgroups): void
-    {
-        $this->subgroups = $subgroups;
-    }
-
 
 
 }

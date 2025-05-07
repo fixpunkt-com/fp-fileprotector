@@ -9,6 +9,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Resource as Core;
 use TYPO3\CMS\Core\Resource\Driver\DriverInterface;
+use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
 use TYPO3\CMS\Core\Resource\FolderInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -66,7 +67,7 @@ class Folder extends Core\Folder {
      * @return bool
      */
     public function isProtected() : bool {
-        return $this -> getProtection() ? $this -> getProtection() -> isProtected() : false;
+        return $this->getProtection() && $this->getProtection()->isProtected();
     }
 
     /**
@@ -82,6 +83,7 @@ class Folder extends Core\Folder {
     /**
      * Gibt die Rootline des Ordners zurück.
      * @return array
+     * @throws InsufficientFolderAccessPermissionsException
      */
     public function getRootline() : array {
         if($this -> hasParentFolder()) {

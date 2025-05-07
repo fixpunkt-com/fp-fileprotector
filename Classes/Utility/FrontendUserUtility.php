@@ -42,7 +42,7 @@ class FrontendUserUtility {
         /** @var FrontendUserGroup $usergroup */
         while($usergroup = array_pop($usergroupsToProcess)) {
             if(!$usergroups -> contains($usergroup)) {
-                $usergroupsToProcess = array_merge($usergroupsToProcess, $usergroup -> getSubgroup() -> toArray());
+                $usergroupsToProcess = array_merge($usergroupsToProcess, $usergroup -> getSubgroups() -> toArray());
                 $usergroups -> attach($usergroup);
             }
         }

@@ -17,10 +17,19 @@ declare(strict_types=1);
 
 namespace Fixpunkt\FpFileprotector\Domain\Repository;
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
 /**
  * A Frontend User Group Repository
  *
  */
-class FrontendUserGroupRepository extends Repository {}
+class FrontendUserGroupRepository extends Repository {
+
+    public function __construct() {
+        parent::__construct();
+        $this->autoTagging = false;
+        $this->persistenceManager = GeneralUtility::makeInstance(PersistenceManager::class);
+    }
+}

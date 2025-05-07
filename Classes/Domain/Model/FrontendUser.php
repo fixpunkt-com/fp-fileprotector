@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Fixpunkt\FpFileprotector\Domain\Model;
 
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
+use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
 class FrontendUser extends AbstractEntity
 {
@@ -41,15 +42,15 @@ class FrontendUser extends AbstractEntity
 
     public function initializeObject()
     {
-
+        $this->userGroups = new ObjectStorage();
     }
 
-    public function getUserGroup(): ?ObjectStorage
+    public function getUserGroups(): ?ObjectStorage
     {
         return $this->userGroups;
     }
 
-    public function setUserGroup(?ObjectStorage $userGroups): void
+    public function setUserGroups(?ObjectStorage $userGroups): void
     {
         $this->userGroups = $userGroups;
     }

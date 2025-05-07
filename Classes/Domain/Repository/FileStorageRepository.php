@@ -39,7 +39,7 @@ class FileStorageRepository {
     public function findByIdentifier(int $fileStorageUid) : ResourceStorage {
         /** @var ResourceFactory $resourceFactory */
         $resourceFactory = GeneralUtility::makeInstance(ResourceFactory::class);
-        return  $resourceFactory->getStorageObject($fileStorageUid);
+        return $resourceFactory->getStorageObject($fileStorageUid);
     }
 
     /**
@@ -53,6 +53,6 @@ class FileStorageRepository {
         $query = $queryBuilder
             -> update('sys_file_storage')
             -> set('protected', $fileStorage -> isProtected())
-            -> set('protected_by_default', $fileStorage -> isProtectedByDefault())->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($fileStorage -> getUid())))->executeStatement();
+            -> set('protected_by_default', $fileStorage -> isProtectedByDefault() ?: 0)->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($fileStorage -> getUid())))->executeStatement();
     }
 }
