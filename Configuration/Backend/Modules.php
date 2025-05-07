@@ -4,7 +4,7 @@ return [
     'file_FpFileprotectorProtection' => [
         'parent' => 'file',
         'access' => 'user',
-        'iconIdentifier' => null,
+        'iconIdentifier' => 'tx-fpfileprotector-module',
         'labels' => 'LLL:EXT:fp_fileprotector/Resources/Private/Language/locallang_module_protection.xlf',
         'extensionName' => 'FpFileprotector',
         'controllerActions' => [
