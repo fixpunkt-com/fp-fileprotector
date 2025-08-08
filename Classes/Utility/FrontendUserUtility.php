@@ -36,7 +36,7 @@ class FrontendUserUtility {
      */
     public function getUsergroups(FrontendUser $frontendUser) : ObjectStorage {
         // Benutzergruppen ermitteln
-        $usergroupsToProcess = $frontendUser -> getUsergroup() -> toArray();
+        $usergroupsToProcess = $frontendUser -> getUserGroups() -> toArray();
         $usergroups = new ObjectStorage();
 
         /** @var FrontendUserGroup $usergroup */
