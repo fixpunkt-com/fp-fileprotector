@@ -5,9 +5,11 @@ namespace Fixpunkt\FpFileprotector\Domain\Model;
 use Fixpunkt\FpFileprotector\Domain\Repository\FolderRepository;
 use Fixpunkt\FpFileprotector\Resource\Folder;
 use Fixpunkt\FpFileprotector\Utility\FrontendUserUtility;
+use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 class Protection extends AbstractEntity {
     /** @var int  */
@@ -98,6 +100,14 @@ class Protection extends AbstractEntity {
     public function getUserGroups() : ?ObjectStorage {
         return $this->userGroups;
     }
+    public function getUserGroupsUids() : array {
+        $uids = [];
+        /** @var FrontendUserGroup $userGroup */
+        foreach($this -> getUserGroups() as $userGroup) {
+            $uids[] = $userGroup -> getUid();
+        }
+        return $uids;
+    }
     /**
      * @param ObjectStorage<FrontendUserGroup> $userGroups
      */
@@ -124,6 +134,14 @@ class Protection extends AbstractEntity {
      */
     public function getUsers() : ?ObjectStorage {
         return $this->users;
+    }
+    public function getUsersUids() : array {
+        $uids = [];
+        /** @var FrontendUser $user */
+        foreach($this -> getUsers() as $user) {
+            $uids[] = $user -> getUid();
+        }
+        return $uids;
     }
     /**
      * @param ObjectStorage<FrontendUser> $users
@@ -154,21 +172,22 @@ class Protection extends AbstractEntity {
         if($this -> isFeLogin()) {
             // FE-Benutzer:in muss in Benutzer:innen-Gruppe sein oder wurde speziell ausgewählt
             $frontendUserUtility = GeneralUtility::makeInstance(FrontendUserUtility::class);
+            /** @var UserAspect $feUser */
             $feUser = $frontendUserUtility -> getCurrentFrontendUser();
-            if($feUser) {
+            if($feUser -> isLoggedIn()) {
                 if($this -> getUserGroups() -> count() == 0 && $this -> getUsers() -> count() == 0) {
                     // Es reicht wenn man eingeloggt ist, keine weiteren Einschränkungen
                     return true;
                 }
 
                 // Benutzer überprüfen
-                if($this -> getUsers() -> contains($feUser)) {
+                if(in_array($feUser -> get("id"), $this -> getUsersUids())) {
                     return true;
                 }
 
                 // Benutzergruppen überprüfen
-                foreach($frontendUserUtility -> getUsergroups($feUser) as $userGroup) {
-                    if($this -> getUserGroups() -> contains($userGroup)) {
+                foreach($feUser -> get("groupIds") as $userGroupId) {
+                    if(in_array($userGroupId, $this -> getUserGroupsUids())) {
                         return true;
                     }
                 }

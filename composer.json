@@ -1,7 +1,7 @@
 {
   "name": "fixpunkt/fp-fileprotector",
   "type": "typo3-cms-extension",
-  "description": "Stellt einen Verzeichnisschutz zur Verfügung.",
+  "description": "File Protector",
   "authors": [
     {
       "name": "Yannik Börgener",
