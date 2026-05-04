@@ -1,4 +1,4 @@
-# TYPO3 Extension: fp_fileprotector
+# TYPO3 Extension: fp-fileprotector
 
 Die Extension **fp-fileprotector** ermöglicht es, den Zugriff auf File Storages (Dateispeicher) in TYPO3 einzuschränken und granulare Zugriffsregeln für einzelne Dateien und Ordner zu definieren.
 
@@ -14,7 +14,7 @@ Die Extension **fp-fileprotector** ermöglicht es, den Zugriff auf File Storages
 ---
 
 ## Funktionsweise
-Mit *fp_fileprotector* kannst du den Zugriff auf Dateien an Bedingungen knüpfen:
+Mit *fp-fileprotector* kannst du den Zugriff auf Dateien an Bedingungen knüpfen:
 * **Frontend-Status:** Ist ein:e Benutzer:in eingeloggt?
   * Prüfung auf spezifische Benutzergruppen.
   * Prüfung auf spezifische Einzelbenutzer:innen.
