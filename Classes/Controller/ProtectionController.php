@@ -53,21 +53,6 @@ class ProtectionController extends ActionController {
         FrontendUserGroupRepository $userGroupRepository,
         FrontendUserRepository $userRepository,
         FolderRepository $folderRepository,
-
-        ResponseFactoryInterface $responseFactory,
-        StreamFactoryInterface $streamFactory,
-        ConfigurationManagerInterface $configurationManager,
-        ValidatorResolver $validatorResolver,
-        ViewResolverInterface $viewResolver,
-        ViewFactoryInterface $viewFactory,
-        ReflectionService $reflectionService,
-        HashService $hashService,
-        MvcPropertyMappingConfigurationService $mvcPropertyMappingConfigurationService,
-        EventDispatcherInterface $eventDispatcher,
-        FileHandlingService $fileHandlingService,
-        PropertyMapper $propertyMapper,
-        FlashMessageService $flashMessageService,
-        ExtensionService $extensionService,
     ) {
         $this -> protectionRepository = $protectionRepository;
         $this -> userGroupRepository = $userGroupRepository;
@@ -78,22 +63,6 @@ class ProtectionController extends ActionController {
         $querySettings -> setRespectStoragePage(false);
         $this -> userGroupRepository -> setDefaultQuerySettings($querySettings);
         $this -> userRepository -> setDefaultQuerySettings($querySettings);
-
-        // Explizit die inject-Methoden aufrufen, da Symfony das nicht mehr tut
-        $this->injectResponseFactory($responseFactory);
-        $this->injectStreamFactory($streamFactory);
-        $this->injectConfigurationManager($configurationManager);
-        $this->injectValidatorResolver($validatorResolver);
-        $this->injectViewResolver($viewResolver);
-        $this->injectViewFactory($viewFactory);
-        $this->injectReflectionService($reflectionService);
-        $this->injectHashService($hashService);
-        $this->injectMvcPropertyMappingConfigurationService($mvcPropertyMappingConfigurationService);
-        $this->injectEventDispatcher($eventDispatcher);
-        $this->injectFileHandlingService($fileHandlingService);
-        $this->injectPropertyMapper($propertyMapper);
-        $this->injectInternalFlashMessageService($flashMessageService);
-        $this->injectInternalExtensionService($extensionService);
 
         $this->moduleTemplateFactory = $moduleTemplateFactory;
     }

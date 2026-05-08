@@ -16,12 +16,6 @@ use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 class ProtectionRepository extends Repository {
 
-    protected $objectType = Protection::class;
-
-    public function __construct() {
-        $this->persistenceManager = GeneralUtility::makeInstance(PersistenceManager::class);
-    }
-
     /**
      * Findet eine Protection für einen bestimmten Ordner.
      * @param FolderInterface $folder

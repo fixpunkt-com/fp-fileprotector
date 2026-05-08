@@ -27,9 +27,4 @@ use TYPO3\CMS\Extbase\Persistence\Repository;
  */
 class FrontendUserGroupRepository extends Repository {
 
-    public function __construct() {
-        parent::__construct();
-        $this->autoTagging = false;
-        $this->persistenceManager = GeneralUtility::makeInstance(PersistenceManager::class);
-    }
 }

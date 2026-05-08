@@ -1,94 +1,13 @@
 # Configuration/Services.yaml
 services:
   _defaults:
-    autowire: false
+    autowire: true
     autoconfigure: true
     public: true
 
   Fixpunkt\FpFileprotector\:
     resource: '../Classes/*'
-
-  Fixpunkt\FpFileprotector\Controller\StartController:
-    arguments:
-      $moduleTemplateFactory: '@TYPO3\CMS\Backend\Template\ModuleTemplateFactory'
-      $responseFactory: '@Psr\Http\Message\ResponseFactoryInterface'
-      $streamFactory: '@Psr\Http\Message\StreamFactoryInterface'
-      $configurationManager: '@TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface'
-      $validatorResolver: '@TYPO3\CMS\Extbase\Validation\ValidatorResolver'
-      $viewResolver: '@TYPO3\CMS\Extbase\Mvc\View\ViewResolverInterface'
-      $viewFactory: '@TYPO3\CMS\Core\View\ViewFactoryInterface'
-      $reflectionService: '@TYPO3\CMS\Extbase\Reflection\ReflectionService'
-      $hashService: '@TYPO3\CMS\Core\Crypto\HashService'
-      $mvcPropertyMappingConfigurationService: '@TYPO3\CMS\Extbase\Mvc\Controller\MvcPropertyMappingConfigurationService'
-      $eventDispatcher: '@Psr\EventDispatcher\EventDispatcherInterface'
-      $fileHandlingService: '@TYPO3\CMS\Extbase\Service\FileHandlingService'
-      $propertyMapper: '@TYPO3\CMS\Extbase\Property\PropertyMapper'
-      $flashMessageService: '@TYPO3\CMS\Core\Messaging\FlashMessageService'
-      $extensionService: '@TYPO3\CMS\Extbase\Service\ExtensionService'
-
-  Fixpunkt\FpFileprotector\Controller\FileStorageController:
-    arguments:
-      $protectionRepository: '@Fixpunkt\FpFileprotector\Domain\Repository\ProtectionRepository'
-      $fileStorageRepository: '@Fixpunkt\FpFileprotector\Domain\Repository\FileStorageRepository'
-      $moduleTemplateFactory: '@TYPO3\CMS\Backend\Template\ModuleTemplateFactory'
-
-      $responseFactory: '@Psr\Http\Message\ResponseFactoryInterface'
-      $streamFactory: '@Psr\Http\Message\StreamFactoryInterface'
-      $configurationManager: '@TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface'
-      $validatorResolver: '@TYPO3\CMS\Extbase\Validation\ValidatorResolver'
-      $viewResolver: '@TYPO3\CMS\Extbase\Mvc\View\ViewResolverInterface'
-      $viewFactory: '@TYPO3\CMS\Core\View\ViewFactoryInterface'
-      $reflectionService: '@TYPO3\CMS\Extbase\Reflection\ReflectionService'
-      $hashService: '@TYPO3\CMS\Core\Crypto\HashService'
-      $mvcPropertyMappingConfigurationService: '@TYPO3\CMS\Extbase\Mvc\Controller\MvcPropertyMappingConfigurationService'
-      $eventDispatcher: '@Psr\EventDispatcher\EventDispatcherInterface'
-      $fileHandlingService: '@TYPO3\CMS\Extbase\Service\FileHandlingService'
-      $propertyMapper: '@TYPO3\CMS\Extbase\Property\PropertyMapper'
-      $flashMessageService: '@TYPO3\CMS\Core\Messaging\FlashMessageService'
-      $extensionService: '@TYPO3\CMS\Extbase\Service\ExtensionService'
-
-
-  Fixpunkt\FpFileprotector\Controller\ProtectionController:
-    arguments:
-      $protectionRepository: '@Fixpunkt\FpFileprotector\Domain\Repository\ProtectionRepository'
-      $folderRepository: '@Fixpunkt\FpFileprotector\Domain\Repository\FolderRepository'
-      $userGroupRepository: '@Fixpunkt\FpFileprotector\Domain\Repository\FrontendUserGroupRepository'
-      $userRepository: '@Fixpunkt\FpFileprotector\Domain\Repository\FrontendUserRepository'
-      $moduleTemplateFactory: '@TYPO3\CMS\Backend\Template\ModuleTemplateFactory'
-
-      $responseFactory: '@Psr\Http\Message\ResponseFactoryInterface'
-      $streamFactory: '@Psr\Http\Message\StreamFactoryInterface'
-      $configurationManager: '@TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface'
-      $validatorResolver: '@TYPO3\CMS\Extbase\Validation\ValidatorResolver'
-      $viewResolver: '@TYPO3\CMS\Extbase\Mvc\View\ViewResolverInterface'
-      $viewFactory: '@TYPO3\CMS\Core\View\ViewFactoryInterface'
-      $reflectionService: '@TYPO3\CMS\Extbase\Reflection\ReflectionService'
-      $hashService: '@TYPO3\CMS\Core\Crypto\HashService'
-      $mvcPropertyMappingConfigurationService: '@TYPO3\CMS\Extbase\Mvc\Controller\MvcPropertyMappingConfigurationService'
-      $eventDispatcher: '@Psr\EventDispatcher\EventDispatcherInterface'
-      $fileHandlingService: '@TYPO3\CMS\Extbase\Service\FileHandlingService'
-      $propertyMapper: '@TYPO3\CMS\Extbase\Property\PropertyMapper'
-      $flashMessageService: '@TYPO3\CMS\Core\Messaging\FlashMessageService'
-      $extensionService: '@TYPO3\CMS\Extbase\Service\ExtensionService'
-
-
-  Fixpunkt\FpFileprotector\Controller\FolderController:
-    arguments:
-      $protectionRepository: '@Fixpunkt\FpFileprotector\Domain\Repository\ProtectionRepository'
-      $folderRepository: '@Fixpunkt\FpFileprotector\Domain\Repository\FolderRepository'
-      $moduleTemplateFactory: '@TYPO3\CMS\Backend\Template\ModuleTemplateFactory'
-
-      $responseFactory: '@Psr\Http\Message\ResponseFactoryInterface'
-      $streamFactory: '@Psr\Http\Message\StreamFactoryInterface'
-      $configurationManager: '@TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface'
-      $validatorResolver: '@TYPO3\CMS\Extbase\Validation\ValidatorResolver'
-      $viewResolver: '@TYPO3\CMS\Extbase\Mvc\View\ViewResolverInterface'
-      $viewFactory: '@TYPO3\CMS\Core\View\ViewFactoryInterface'
-      $reflectionService: '@TYPO3\CMS\Extbase\Reflection\ReflectionService'
-      $hashService: '@TYPO3\CMS\Core\Crypto\HashService'
-      $mvcPropertyMappingConfigurationService: '@TYPO3\CMS\Extbase\Mvc\Controller\MvcPropertyMappingConfigurationService'
-      $eventDispatcher: '@Psr\EventDispatcher\EventDispatcherInterface'
-      $fileHandlingService: '@TYPO3\CMS\Extbase\Service\FileHandlingService'
-      $propertyMapper: '@TYPO3\CMS\Extbase\Property\PropertyMapper'
-      $flashMessageService: '@TYPO3\CMS\Core\Messaging\FlashMessageService'
-      $extensionService: '@TYPO3\CMS\Extbase\Service\ExtensionService'
+    exclude:
+      - '../Classes/Domain/Model/*'
+      - '../Classes/Resource/*'
+      - '../Classes/Utility/*'
