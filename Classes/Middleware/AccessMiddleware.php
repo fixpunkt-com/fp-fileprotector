@@ -8,7 +8,7 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Http\Stream;
-use TYPO3\CMS\Core\Resource\Folder;
+use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\ProcessedFile;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Resource\StorageRepository;
@@ -48,8 +48,22 @@ class AccessMiddleware implements MiddlewareInterface {
         $protected = $storage -> getStorageRecord()["protected"];
         $protectedByDefault = $storage -> getStorageRecord()["protected_by_default"];
 
-        $file = $storage->getFile($filePath);
-        if(!$file) {
+        try {
+            $file = $storage->getFile($filePath);
+        } catch(\Exception $e) {
+            $file = null;
+        }
+
+        if(
+            !$file
+            || (
+                $file instanceof File
+                && (
+                    $file->isMissing()
+                    || $file->isDeleted()
+                )
+            )
+        ) {
             return $this -> createError("Die Datei konnte nicht gefunden werden.");
         }
         $originalFile = $file;
