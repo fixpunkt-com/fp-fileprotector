@@ -50,7 +50,7 @@ class AccessMiddleware implements MiddlewareInterface {
 
         try {
             $file = $storage->getFile($filePath);
-        } catch(\Exception $e) {
+        } catch(\Exception) {
             $file = null;
         }
 
