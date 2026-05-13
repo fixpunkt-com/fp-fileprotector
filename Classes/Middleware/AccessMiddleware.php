@@ -9,10 +9,10 @@ use Psr\Http\Server\RequestHandlerInterface;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Http\Stream;
 use TYPO3\CMS\Core\Resource\Folder;
+use TYPO3\CMS\Core\Resource\ProcessedFile;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Resource\StorageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 class AccessMiddleware implements MiddlewareInterface {
     public function process(
@@ -31,12 +31,14 @@ class AccessMiddleware implements MiddlewareInterface {
         // Ansonsten Zugriffsberechtigung prüfen
         $path = $request -> getUri() -> getPath();
         $pathParts = explode("/", $path);
+        // remove first slash so we can get the storage
         array_shift($pathParts);
 
         // Einzelne Bestandteile ermitteln
         $storageIdentifier = array_shift($pathParts);
-        $fileName = array_pop($pathParts);
         $filePath = implode("/", $pathParts);
+        // add the slash again, because all identifiers start with a slash
+        $filePath = "/" . $filePath;
 
         // Storage ermitteln
         $storage = $this -> getStorage($storageIdentifier);
@@ -49,7 +51,7 @@ class AccessMiddleware implements MiddlewareInterface {
         // Wenn der Storage nicht geschützt ist, dann Datei ausgeben.
         if(!$protected) {
             // ToDo: Logausgabe, dass ungeschütztes Verzeichnis htaccess enthält.
-            return $this -> releaseFile($storage, $filePath."/".$fileName);
+            return $this -> releaseFile($storage, $filePath);
         }
 
         // Ordner ermitteln
@@ -61,7 +63,7 @@ class AccessMiddleware implements MiddlewareInterface {
         // Zugriffsberechtigungen ermitteln
         $protection = ProtectionRepository::getProtectionStatic($folder);
         if(!$protection && !$protectedByDefault || $protection && $protection -> isGranted()) {
-            return $this -> releaseFile($storage, $filePath."/".$fileName);
+            return $this -> releaseFile($storage, $filePath);
         }
         return $this -> createError("Keine Zugriffsberechtigung.", 500);
     }
@@ -81,17 +83,6 @@ class AccessMiddleware implements MiddlewareInterface {
             }
         };
         return null;
-    }
-
-    /**
-     * Ermittelt den Ordner, in dem die Datei liegt.
-     * @param ResourceStorage $storage
-     * @param string $path
-     * @return Folder|null
-     * @throws \TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException
-     */
-    private function getFolder(ResourceStorage $storage, string $path) : ?Folder {
-        return $storage -> getFolder($path);
     }
 
     /**
