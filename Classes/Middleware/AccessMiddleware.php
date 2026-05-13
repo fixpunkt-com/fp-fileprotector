@@ -48,6 +48,15 @@ class AccessMiddleware implements MiddlewareInterface {
         $protected = $storage -> getStorageRecord()["protected"];
         $protectedByDefault = $storage -> getStorageRecord()["protected_by_default"];
 
+        $file = $storage->getFile($filePath);
+        if(!$file) {
+            return $this -> createError("Die Datei konnte nicht gefunden werden.");
+        }
+        $originalFile = $file;
+        if($originalFile instanceof ProcessedFile) {
+            $originalFile = $file->getOriginalFile();
+        }
+
         // Wenn der Storage nicht geschützt ist, dann Datei ausgeben.
         if(!$protected) {
             // ToDo: Logausgabe, dass ungeschütztes Verzeichnis htaccess enthält.
@@ -55,7 +64,7 @@ class AccessMiddleware implements MiddlewareInterface {
         }
 
         // Ordner ermitteln
-        $folder = $this -> getFolder($storage, $filePath);
+        $folder = $originalFile->getParentFolder();
         if(!$folder) {
             return $this -> createError("Der Speicherort konnte nicht gefunden werden.");
         }
