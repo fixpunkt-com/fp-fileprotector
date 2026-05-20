@@ -8,6 +8,12 @@ vendor/*
 Documentation-GENERATED-temp/
 Documentation-GENERATED-temp/*
 
+.env
+public
+public/*
+index.html
+composer.lock
+
 
 # User-specific stuff:
 .idea/**/workspace.xml
