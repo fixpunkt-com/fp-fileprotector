@@ -33,7 +33,7 @@ fp-fileprotector
 
 The extension **fp-fileprotector** allows you to restrict access to file
 storages in TYPO3 and define granular access rules for individual files
-and folders.
+and folders
 
 ----
 
