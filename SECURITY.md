@@ -14,4 +14,4 @@ Include as much of the following information as possible:
 - Steps to reproduce
 - Potential impact
 
-We will acknowledge your report within 48 hours and aim to provide a fix within 14 days.
+We will acknowledge your report within two workdays and aim to provide a fix within 14 days.
