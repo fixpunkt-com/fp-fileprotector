@@ -1,182 +1,213 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Fixpunkt\FpFileprotector\Domain\Model;
 
 use Fixpunkt\FpFileprotector\Domain\Repository\FolderRepository;
 use Fixpunkt\FpFileprotector\Resource\Folder;
 use Fixpunkt\FpFileprotector\Utility\FrontendUserUtility;
+use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Domain\Model\FrontendUser;
-use TYPO3\CMS\Extbase\Domain\Model\FrontendUserGroup;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 
-class Protection extends AbstractEntity {
-    /** @var int  */
+class Protection extends AbstractEntity
+{
     protected int $storage = 0;
-    /** @var string  */
-    protected string $folder = "";
-    /** @var bool  */
+    protected string $folder = '';
     protected bool $feLogin = false;
-    /** @var bool  */
     protected bool $beLogin = false;
-    /** @var ObjectStorage<FrontendUserGroup>|null  */
+    /** @var ObjectStorage<FrontendUserGroup>|null */
     protected ?ObjectStorage $userGroups = null;
-    /** @var ObjectStorage<FrontendUser>|null  */
+    /** @var ObjectStorage<FrontendUser>|null */
     protected ?ObjectStorage $users = null;
 
-    /**
-     *
-     */
-    public function __construct() {
-        $this -> userGroups = new ObjectStorage();
-        $this -> users = new ObjectStorage();
+    public function __construct()
+    {
+        $this->userGroups = new ObjectStorage();
+        $this->users = new ObjectStorage();
     }
 
     /**
      * @return int
      */
-    public function getStorage() : int {
+    public function getStorage(): int
+    {
         return $this->storage;
     }
     /**
      * @param int $storage
      */
-    public function setStorage(int $storage) : void{
+    public function setStorage(int $storage): void
+    {
         $this->storage = $storage;
     }
 
     /**
      * @return string
      */
-    public function getFolder() : string {
-        return $this -> folder;
+    public function getFolder(): string
+    {
+        return $this->folder;
     }
     /**
      * @param string $folder
      */
-    public function setFolder(string $folder): void {
+    public function setFolder(string $folder): void
+    {
         $this->folder = $folder;
     }
     /**
-     * Gibt den Ordner als Objekt zurück.
+     * Returns the folder as an object.
+     *
      * @return Folder|null
      */
-    public function getFolderObject() : ?Folder {
+    public function getFolderObject(): ?Folder
+    {
         /** @var FolderRepository $folderRepository */
         $folderRepository = GeneralUtility::makeInstance(FolderRepository::class);
-        return $folderRepository -> findOneByCombinedIdentifier($this -> getStorage().":".$this -> getFolder());
+        return $folderRepository->findOneByCombinedIdentifier($this->getStorage() . ':' . $this->getFolder());
     }
 
     /**
      * @return bool
      */
-    public function isFeLogin() : bool {
+    public function isFeLogin(): bool
+    {
         return $this->feLogin;
     }
     /**
      * @param bool $feLogin
      */
-    public function setFeLogin(bool $feLogin) : void {
+    public function setFeLogin(bool $feLogin): void
+    {
         $this->feLogin = $feLogin;
     }
 
     /**
      * @return bool
      */
-    public function isBeLogin() : bool {
+    public function isBeLogin(): bool
+    {
         return $this->beLogin;
     }
     /**
      * @param bool $beLogin
      */
-    public function setBeLogin(bool $beLogin) : void {
+    public function setBeLogin(bool $beLogin): void
+    {
         $this->beLogin = $beLogin;
     }
 
     /**
      * @return ObjectStorage<FrontendUserGroup>|null
      */
-    public function getUserGroups() : ?ObjectStorage {
+    public function getUserGroups(): ?ObjectStorage
+    {
         return $this->userGroups;
+    }
+    public function getUserGroupsUids(): array
+    {
+        $uids = [];
+        /** @var FrontendUserGroup $userGroup */
+        foreach ($this->getUserGroups() as $userGroup) {
+            $uids[] = $userGroup->getUid();
+        }
+        return $uids;
     }
     /**
      * @param ObjectStorage<FrontendUserGroup> $userGroups
      */
-    public function setUserGroups(ObjectStorage $userGroups) : void {
+    public function setUserGroups(ObjectStorage $userGroups): void
+    {
         $this->userGroups = $userGroups;
     }
     /**
      * @param FrontendUserGroup $userGroup
-     * @return void
      */
-    public function addUserGroup(FrontendUserGroup $userGroup) : void {
-        $this -> userGroups -> attach($userGroup);
+    public function addUserGroup(FrontendUserGroup $userGroup): void
+    {
+        $this->userGroups->attach($userGroup);
     }
     /**
      * @param FrontendUserGroup $userGroup
-     * @return void
      */
-    public function removeUserGroup(FrontendUserGroup $userGroup) : void {
-        $this -> userGroups -> detach($userGroup);
+    public function removeUserGroup(FrontendUserGroup $userGroup): void
+    {
+        $this->userGroups->detach($userGroup);
     }
 
     /**
      * @return ObjectStorage<FrontendUser>|null
      */
-    public function getUsers() : ?ObjectStorage {
+    public function getUsers(): ?ObjectStorage
+    {
         return $this->users;
+    }
+    public function getUsersUids(): array
+    {
+        $uids = [];
+        /** @var FrontendUser $user */
+        foreach ($this->getUsers() as $user) {
+            $uids[] = $user->getUid();
+        }
+        return $uids;
     }
     /**
      * @param ObjectStorage<FrontendUser> $users
      */
-    public function setUsers(ObjectStorage $users): void {
+    public function setUsers(ObjectStorage $users): void
+    {
         $this->users = $users;
     }
     /**
      * @param FrontendUser $user
-     * @return void
      */
-    public function addUser(FrontendUser $user) : void {
-        $this -> users -> attach($user);
+    public function addUser(FrontendUser $user): void
+    {
+        $this->users->attach($user);
     }
     /**
      * @param FrontendUser $user
-     * @return void
      */
-    public function removeUser(FrontendUser $user) : void {
-        $this -> users -> detach($user);
+    public function removeUser(FrontendUser $user): void
+    {
+        $this->users->detach($user);
     }
 
     /**
-     * Prüft ob die Person, welche auf die Resource zugreifen will, dazu berechtigt ist.
+     * Checks whether the current user is allowed to access the resource.
+     *
      * @return bool
      */
-    public function isGranted() : bool {
-        if($this -> isFeLogin()) {
-            // FE-Benutzer:in muss in Benutzer:innen-Gruppe sein oder wurde speziell ausgewählt
+    public function isGranted(): bool
+    {
+        if ($this->isFeLogin()) {
             $frontendUserUtility = GeneralUtility::makeInstance(FrontendUserUtility::class);
-            $feUser = $frontendUserUtility -> getCurrentFrontendUser();
-            if($feUser) {
-                if($this -> getUserGroups() -> count() == 0 && $this -> getUsers() -> count() == 0) {
-                    // Es reicht wenn man eingeloggt ist, keine weiteren Einschränkungen
+            $feUser = $frontendUserUtility->getCurrentFrontendUser();
+            if ($feUser && $feUser->isLoggedIn()) {
+                if ($this->getUserGroups()->count() === 0 && $this->getUsers()->count() === 0) {
                     return true;
                 }
 
-                // Benutzer überprüfen
-                if($this -> getUsers() -> contains($feUser)) {
+                if (in_array($feUser->get('id'), $this->getUsersUids(), true)) {
                     return true;
                 }
 
-                // Benutzergruppen überprüfen
-                foreach($frontendUserUtility -> getUsergroups($feUser) as $userGroup) {
-                    if($this -> getUserGroups() -> contains($userGroup)) {
+                foreach ($feUser->get('groupIds') as $userGroupId) {
+                    if (in_array($userGroupId, $this->getUserGroupsUids(), true)) {
                         return true;
                     }
                 }
             }
         }
-        if($this -> isBeLogin() && $GLOBALS['BE_USER']) {
+
+        $context = GeneralUtility::makeInstance(Context::class);
+        if (
+            $this->isBeLogin()
+            && (bool)$context->getPropertyFromAspect('backend.user', 'isLoggedIn')
+        ) {
             return true;
         }
 
@@ -184,11 +215,12 @@ class Protection extends AbstractEntity {
     }
 
     /**
-     * Gibt an, ob der Verzeichnisschutz überhaupt schützt.
+     * Returns whether the folder protection applies any restrictions.
+     *
      * @return bool
      */
-    public function isProtected() : bool {
-        return $this -> isFeLogin() || $this -> isBeLogin();
+    public function isProtected(): bool
+    {
+        return $this->isFeLogin() || $this->isBeLogin();
     }
-
 }

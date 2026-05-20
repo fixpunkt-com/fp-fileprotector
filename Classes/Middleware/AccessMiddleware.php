@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Fixpunkt\FpFileprotector\Middleware;
 
 use Fixpunkt\FpFileprotector\Domain\Repository\ProtectionRepository;
@@ -8,108 +11,111 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Http\Stream;
-use TYPO3\CMS\Core\Resource\Folder;
+use TYPO3\CMS\Core\Resource\File;
+use TYPO3\CMS\Core\Resource\ProcessedFile;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Resource\StorageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
-class AccessMiddleware implements MiddlewareInterface {
+class AccessMiddleware implements MiddlewareInterface
+{
     public function process(
         ServerRequestInterface $request,
         RequestHandlerInterface $handler
     ): ResponseInterface {
-        // Wenn die Anfrage nicht aus einem geschützten FileAdmin kommt weitermachen
-        if(
-            !key_exists("tx_fpfileprotector", $request -> getQueryParams()) ||
-            !key_exists("check", $request -> getQueryParams()["tx_fpfileprotector"]) ||
-            !$request -> getQueryParams()["tx_fpfileprotector"]["check"]) {
-
+        $queryParams = $request->getQueryParams();
+        if (
+            empty($queryParams['tx_fpfileprotector'])
+            || empty($queryParams['tx_fpfileprotector']['check'])
+        ) {
             return $handler->handle($request);
         }
 
-        // Ansonsten Zugriffsberechtigung prüfen
-        $path = $request -> getUri() -> getPath();
-        $pathParts = explode("/", $path);
+        $path = $request->getUri()->getPath();
+        $pathParts = explode('/', $path);
+        // remove first slash so we can get the storage
         array_shift($pathParts);
 
-        // Einzelne Bestandteile ermitteln
-        $storageIdentifier = array_shift($pathParts);
-        $fileName = array_pop($pathParts);
-        $filePath = implode("/", $pathParts);
+        $storageIdentifier = (string)array_shift($pathParts);
+        $filePath = implode('/', $pathParts);
+        // add the slash again, because all identifiers start with a slash
+        $filePath = '/' . $filePath;
 
-        // Storage ermitteln
-        $storage = $this -> getStorage($storageIdentifier);
-        if(!$storage) {
-            return $this -> createError("Der Storage konnte nicht gefunden werden.");
+        $storage = $this->getStorage($storageIdentifier);
+        if (!$storage) {
+            return $this->createError(LocalizationUtility::translate('sys_file_storage.errors.storage_not_found', 'FpFileprotector'));
         }
-        $protected = $storage -> getStorageRecord()["protected"];
-        $protectedByDefault = $storage -> getStorageRecord()["protected_by_default"];
+        $protected = $storage->getStorageRecord()['protected'];
+        $protectedByDefault = $storage->getStorageRecord()['protected_by_default'];
 
-        // Wenn der Storage nicht geschützt ist, dann Datei ausgeben.
-        if(!$protected) {
-            // ToDo: Logausgabe, dass ungeschütztes Verzeichnis htaccess enthält.
-            return $this -> releaseFile($storage, $filePath."/".$fileName);
-        }
-
-        // Ordner ermitteln
-        $folder = $this -> getFolder($storage, $filePath);
-        if(!$folder) {
-            return $this -> createError("Der Speicherort konnte nicht gefunden werden.");
+        try {
+            $file = $storage->getFile($filePath);
+        } catch (\Exception) {
+            $file = null;
         }
 
-        // Zugriffsberechtigungen ermitteln
+        if (
+            !$file
+            || (
+                $file instanceof File
+                && (
+                    $file->isMissing()
+                    || $file->isDeleted()
+                )
+            )
+        ) {
+            return $this->createError(LocalizationUtility::translate('sys_file_storage.errors.file_not_found', 'FpFileprotector'));
+        }
+        $originalFile = $file;
+        if ($originalFile instanceof ProcessedFile) {
+            $originalFile = $file->getOriginalFile();
+        }
+
+        if (!$protected) {
+            return $this->releaseFile($storage, $filePath);
+        }
+
+        $folder = $originalFile->getParentFolder();
+        if (!$folder) {
+            return $this->createError(LocalizationUtility::translate('sys_file_storage.errors.folder_not_found', 'FpFileprotector'));
+        }
+
         $protection = ProtectionRepository::getProtectionStatic($folder);
-        if(!$protection && !$protectedByDefault || $protection && $protection -> isGranted()) {
-            return $this -> releaseFile($storage, $filePath."/".$fileName);
+        if ((!$protection && !$protectedByDefault) || ($protection && $protection->isGranted())) {
+            return $this->releaseFile($storage, $filePath);
         }
-        return $this -> createError("Keine Zugriffsberechtigung.", 500);
+        return $this->createError(LocalizationUtility::translate('sys_file_storage.errors.access_denied', 'FpFileprotector'), 500);
     }
 
     /**
-     * Gibt den passenden Storage zurück.
+     * Returns the matching storage.
+     *
      * @param string $identifier
      * @return ResourceStorage|null
      */
-    private function getStorage(string $identifier) : ?ResourceStorage {
+    private function getStorage(string $identifier): ?ResourceStorage
+    {
         /** @var StorageRepository $storageRepository */
         $storageRepository = GeneralUtility::makeInstance(StorageRepository::class);
-        foreach($storageRepository->findAll() as $storage) {
-            $basePath = $storage -> getConfiguration()["basePath"];
-            if($basePath == $identifier."/") {
+        foreach ($storageRepository->findAll() as $storage) {
+            $basePath = $storage->getConfiguration()['basePath'];
+            if ($basePath === $identifier . '/') {
                 return $storage;
             }
-        };
+        }
         return null;
     }
 
     /**
-     * Ermittelt den Ordner, in dem die Datei liegt.
-     * @param ResourceStorage $storage
-     * @param string $path
-     * @return Folder|null
-     * @throws \TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException
-     */
-    private function getFolder(ResourceStorage $storage, string $path) : ?Folder {
-        return $storage -> getFolder($path);
-    }
-
-    /**
-     * Gibt die gesuchte Datei zurück.
-     * @param ResourceStorage $storage
-     * @param string $fileIdentifier
-     * @return \TYPO3\CMS\Core\Resource\FileInterface
-     */
-    private function getFile(ResourceStorage $storage, string $fileIdentifier) {
-        return $storage -> getFile($fileIdentifier);
-    }
-
-    /**
-     * Gibt eine Fehlermeldung zurück.
+     * Returns an error response.
+     *
      * @param string $reason
      * @param int $status
      * @return Response
      */
-    private function createError(string $reason, int $status = 404) : Response {
+    private function createError(string $reason, int $status = 404): Response
+    {
         $body = new Stream('php://temp', 'rw');
         $body->write($reason);
         return (new Response())
@@ -118,19 +124,23 @@ class AccessMiddleware implements MiddlewareInterface {
     }
 
     /**
-     * Gibt die Datei aus.
-     * @return void
+     * Releases the file contents.
+     *
+     * @param ResourceStorage $storage
+     * @param string $fileIdentifier
+     * @return Response
      */
-    private function releaseFile(ResourceStorage $storage, string $fileIdentifier) : Response {
-        $file = $this -> getFile($storage, $fileIdentifier);
-        if(!$file) {
-            return $this -> createError("Die angegebene Datei konnte nicht gefunden werden.");
+    private function releaseFile(ResourceStorage $storage, string $fileIdentifier): Response
+    {
+        $file = $storage->getFile($fileIdentifier);
+        if (!$file) {
+            return $this->createError(LocalizationUtility::translate('sys_file_storage.errors.file_release_not_found', 'FpFileprotector'));
         }
 
         $body = new Stream('php://temp', 'rw');
-        $body->write($file -> getContents());
+        $body->write($file->getContents());
         return (new Response())
-            ->withHeader('Content-Type', $file -> getMimeType())
+            ->withHeader('Content-Type', $file->getMimeType())
             ->withBody($body);
     }
 }

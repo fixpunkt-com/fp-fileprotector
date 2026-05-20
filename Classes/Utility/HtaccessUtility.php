@@ -1,69 +1,74 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Fixpunkt\FpFileprotector\Utility;
 
 use Fixpunkt\FpFileprotector\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Core\Environment;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
-class HtaccessUtility {
-    /** @var ResourceStorage  */
-    protected ResourceStorage $resourceStorage;
-
-    /**
-     * @param ResourceStorage $resourceStorage
-     */
-    public function __construct(ResourceStorage $resourceStorage) {
-        $this -> resourceStorage = $resourceStorage;
-    }
+class HtaccessUtility
+{
+    public function __construct(protected readonly ResourceStorage $resourceStorage) {}
 
     /**
-     * Prüft ob der Storage durch eine .htaccess-Datei geschützt ist.
+     * Checks whether the storage is protected by an .htaccess file.
+     *
      * @return bool
      */
-    public function hasHtaccess() : bool {
-        return $this -> getHtaccessPosition() >= 0;
+    public function hasHtaccess(): bool
+    {
+        return $this->getHtaccessPosition() >= 0;
     }
 
     /**
-     * Fügt einer .htaccess-Datei die Schutzregeln hinzu, wenn diese noch nicht existieren.
-     * @return void
+     * Adds protection rules to an .htaccess file if they do not exist yet.
      */
-    public function addHtaccess() : void {
-        if($this -> hasHtaccess()) {
+    public function addHtaccess(): void
+    {
+        if ($this->hasHtaccess()) {
             return;
         }
 
-        $handle = fopen($this -> getHtaccessPath(), 'a');
-        foreach($this -> getHtaccessTemplate() as $templateLine) {
-            fwrite($handle, "\n".$templateLine);
+        $path = $this->getHtaccessPath();
+        if ((!file_exists($path) && !is_writable(dirname($path))) || (file_exists($path) && !is_writable($path))) {
+            return;
+        }
+
+        $handle = fopen($path, 'a');
+        if (!$handle) {
+            return;
+        }
+
+        foreach ($this->getHtaccessTemplate() as $templateLine) {
+            fwrite($handle, "\n" . $templateLine);
         }
         fclose($handle);
     }
 
-
     /**
-     * Entfernt die Schutzregel aus einer .htaccess-Datei.
-     * @return void
+     * Removes the protection rules from an .htaccess file.
      */
-    public function removeHtaccess() : void {
-        if(!$this -> hasHtaccess()) {
+    public function removeHtaccess(): void
+    {
+        if (!$this->hasHtaccess()) {
             return;
         }
 
-        // Position ermitteln
-        $position = $this -> getHtaccessPosition();
-        $templateLines = count($this -> getHtaccessTemplate());
+        $position = $this->getHtaccessPosition();
+        $templateLines = count($this->getHtaccessTemplate());
+        $path = $this->getHtaccessPath();
+        if (!is_readable($path) || !is_writable($path)) {
+            return;
+        }
 
-        // Richtigen Inhalt zwischenspeichern
         $newFile = [];
-        $handle = @fopen($this -> getHtaccessPath(), "r");
+        $handle = fopen($path, 'r');
         if ($handle) {
             $i = 0;
-            while (!feof($handle))
-            {
-                $buffer = fgets($handle);
-                if($i < $position || $i > $position + $templateLines - 1) {
+            while (($buffer = fgets($handle)) !== false) {
+                if ($i < $position || $i > $position + $templateLines - 1) {
                     $newFile[] = $buffer;
                 }
                 $i++;
@@ -71,81 +76,93 @@ class HtaccessUtility {
             fclose($handle);
         }
 
-        // Richtigen Inhalt in Datei schreiben
-        $handle = @fopen($this -> getHtaccessPath(), "w");
-        foreach($newFile as $line) {
+        $handle = fopen($path, 'w');
+        if (!$handle) {
+            return;
+        }
+
+        foreach ($newFile as $line) {
             fwrite($handle, $line);
         }
+        fclose($handle);
     }
 
     /**
-     * Gibt zurück, ob die .htaccess-Datei existiert.
+     * Returns whether the .htaccess file exists.
+     *
      * @return bool
      */
-    private function htaccessExists() : bool {
-        return file_exists($this -> getHtaccessPath());
+    private function htaccessExists(): bool
+    {
+        return file_exists($this->getHtaccessPath());
     }
 
     /**
-     * Gibt den möglichen Pfad einer .htaccess Datei zurück.
+     * Returns the possible .htaccess file path.
+     *
      * @return string
      */
-    private function getHtaccessPath() : string {
-        return Environment::getPublicPath()."/".$this -> resourceStorage -> getRootLevelFolder() -> getPublicUrl().".htaccess";
+    private function getHtaccessPath(): string
+    {
+        return Environment::getPublicPath() . '/' . $this->resourceStorage->getRootLevelFolder()->getPublicUrl() . '.htaccess';
     }
 
     /**
-     * Gibt das Template für den Verzeichnisschutz zurück.
+     * Returns the folder protection template.
+     *
      * @return array
      */
-    private function getHtaccessTemplate() : array {
-        $templatePath = Environment::getPublicPath()."/typo3conf/ext/fp_fileprotector/Resources/Private/htaccess.txt";
+    private function getHtaccessTemplate(): array
+    {
+        $templatePath = ExtensionManagementUtility::extPath('fp_fileprotector') . 'Resources/Private/htaccess.txt';
         $lines = [];
-        $handle = @fopen($templatePath, "r");
-        if ($handle)
-        {
-            while (!feof($handle))
-            {
-                $lines[] = trim(fgets($handle));
+        if (!is_readable($templatePath)) {
+            return $lines;
+        }
+
+        $handle = fopen($templatePath, 'r');
+        if ($handle) {
+            while (($line = fgets($handle)) !== false) {
+                $lines[] = trim($line);
             }
             fclose($handle);
         }
         return $lines;
     }
 
-    private function getHtaccessPosition() : int {
-        if(!$this -> htaccessExists()) {
+    private function getHtaccessPosition(): int
+    {
+        if (!$this->htaccessExists()) {
             return -1;
         }
 
-        $template = $this -> getHtaccessTemplate();
+        $template = $this->getHtaccessTemplate();
         $templateLine = -1;
         $firstLine = -1;
+        $path = $this->getHtaccessPath();
+        if (!is_readable($path)) {
+            return $firstLine;
+        }
 
-        $handle = @fopen($this -> getHtaccessPath(), "r");
-        if ($handle)
-        {
+        $handle = fopen($path, 'r');
+        if ($handle) {
             $i = 0;
-            while (!feof($handle))
-            {
-                $buffer = trim(fgets($handle));
+            while (($line = fgets($handle)) !== false) {
+                $buffer = trim($line);
 
-                // Alle Zeilen wurden eingelesen
-                if($templateLine >= count($template)) {
+                if ($templateLine >= count($template)) {
+                    fclose($handle);
                     return $firstLine;
-
                 }
-                // Wir befinden uns mitten in einer begutachtung
-                if($templateLine >= 0) {
-                    if($buffer == $template[$templateLine]) {
+                if ($templateLine >= 0) {
+                    if (array_key_exists($templateLine, $template) && $buffer === $template[$templateLine]) {
                         $templateLine++;
                     } else {
                         $templateLine = -1;
                         $firstLine = -1;
                     }
                 }
-                // Ist diese Zeile der Start?
-                if($templateLine < 0 && $buffer == $template[0]) {
+                if (array_key_exists(0, $template) && $templateLine < 0 && $buffer === $template[0]) {
                     $firstLine = $i;
                     $templateLine = 1;
                 }

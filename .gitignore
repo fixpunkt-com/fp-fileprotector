@@ -5,6 +5,9 @@
 vendor
 vendor/
 vendor/*
+Documentation-GENERATED-temp/
+Documentation-GENERATED-temp/*
+
 
 # User-specific stuff:
 .idea/**/workspace.xml

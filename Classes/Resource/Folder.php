@@ -1,95 +1,116 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Fixpunkt\FpFileprotector\Resource;
 
 use Fixpunkt\FpFileprotector\Domain\Model\Protection;
 use Fixpunkt\FpFileprotector\Domain\Repository\ProtectionRepository;
-use Fixpunkt\FpFileprotector\Utility\HtaccessUtility;
-use Psr\EventDispatcher\EventDispatcherInterface;
-use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Resource as Core;
-use TYPO3\CMS\Core\Resource\Driver\DriverInterface;
-use TYPO3\CMS\Core\Resource\FolderInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
- * Diese Klasse ist NICHT in TCA definiert sondern dient nur zum einfacheren Arbeiten mit den Storages.
+ * This class is not defined in TCA and only simplifies working with storages.
  */
-class Folder extends Core\Folder {
-    // Override functions
-    /**
-     * @return ResourceStorage
-     */
-    public function getStorage() : ResourceStorage {
-        return parent::getStorage();
-    }
+class Folder extends Core\Folder
+{
+    /** @var ResourceStorage */
+    protected $storage;
 
-    // New functions
     /**
-     * Gibt den Protection dieses Ordners oder seine übergeordneten Ordner zurück.
+     * Returns protection for this folder or one of its parent folders.
+     *
+     * @param bool $recursive
      * @return Protection|null
      */
-    public function getProtection() : ?Protection {
+    public function getProtection(bool $recursive = true): ?Protection
+    {
         /** @var ProtectionRepository $protectionRepository */
         $protectionRepository = GeneralUtility::makeInstance(ProtectionRepository::class);
-        return $protectionRepository -> getProtection($this);
+        return $protectionRepository->getProtection($this, $recursive);
     }
     /**
-     * Gibt den Protection genau dieses Ordners zurück.
+     * Returns protection assigned directly to this folder.
+     *
      * @return Protection|null
      */
-    public function getOwnProtection() : ?Protection {
-        /** @var ProtectionRepository $protectionRepository */
-        $protectionRepository = GeneralUtility::makeInstance(ProtectionRepository::class);
-        return $protectionRepository -> findOneByFolder($this);
+    public function getOwnProtection(): ?Protection
+    {
+        return $this->getProtection(false);
     }
 
     /**
-     * Prüft, ob es sich bei dem Ordner um den RootLevelFolder handelt.
+     * Checks whether this folder is the root level folder.
+     *
      * @return bool
      */
-    public function isRootLevelFolder() : bool {
-        return $this -> getStorage() -> getRootLevelFolder() -> getIdentifier() == $this -> getIdentifier();
+    public function isRootLevelFolder(): bool
+    {
+        return $this->getStorage()->getRootLevelFolder()->getIdentifier() === $this->getIdentifier();
     }
 
     /**
      * @return bool
      */
-    public function hasParentFolder() : bool {
-        return !$this -> isRootLevelFolder();
+    public function hasParentFolder(): bool
+    {
+        return !$this->isRootLevelFolder();
     }
 
     /**
-     * Gibt zurück, ob ein Zugriffsschutz besteht.
-     * @return bool
+     * Returns the protection status if this folder
+     *
+     * @return string
      */
-    public function isProtected() : bool {
-        return $this -> getProtection() ? $this -> getProtection() -> isProtected() : false;
-    }
-
-    /**
-     * Gibt an, ob auf den Ordner zugegriffen werden kann oder nicht.
-     * @return bool
-     */
-    public function isAccessible() : bool {
-        return
-            $this -> getProtection() && $this -> getStorage() -> isProtectedByDefault() && $this -> isProtected() ||
-            !$this -> getStorage() -> isProtectedByDefault();
-    }
-
-    /**
-     * Gibt die Rootline des Ordners zurück.
-     * @return array
-     */
-    public function getRootline() : array {
-        if($this -> hasParentFolder()) {
-            $childFolders = $this -> getParentFolder() -> getRootline();
-            $childFolders[] = $this;
-            return $childFolders;
+    public function getProtectionStatus(): string
+    {
+        $protection = $this->getProtection();
+        if ($protection && $protection->isProtected()) {
+            // protection is set
+            return $this->getOwnProtection() ? 'protected' : 'protected_by_parent';
         } else {
-            return [$this];
+            // no protection is set
+            return $this->storage->isProtectedByDefault() ? 'no_access' : 'public';
         }
+    }
+
+    /**
+     * Returns whether access protection exists.
+     *
+     * @return bool
+     */
+    public function isProtected(): bool
+    {
+        return in_array($this->getProtectionStatus(), ['protected', 'protected_by_parent']);
+    }
+
+    /**
+     * Returns whether this folder can be accessed.
+     *
+     * @return bool
+     */
+    public function isAccessible(): bool
+    {
+        return $this->getProtectionStatus() !== 'no_access';
+    }
+
+    /**
+     * Returns whether this folder can be accessed.
+     *
+     * @return bool
+     */
+    public function isPublic(): bool
+    {
+        return $this->getProtectionStatus() === 'public';
+    }
+
+    /**
+     * Returns a speaking name if the Folder is the root folder
+     *
+     * @return string
+     */
+    public function getSpeakingName(): string
+    {
+        return $this->hasParentFolder() ? $this->getName() : $this->getStorage()->getName();
     }
 }

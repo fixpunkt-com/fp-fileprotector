@@ -2,19 +2,16 @@
 
 $EM_CONF[$_EXTKEY] = [
     'title' => 'File Protector',
-    'description' => 'Stellt einen Verzeichnisschutz zur Verfügung.',
-    'category' => 'frontend',
-    'author' => 'Yannik Börgener',
-    'author_email' => 'y.boergener@fixpunkt.com',
+    'description' => 'Restricts access to file storages based on frontend login, user groups, or backend session.',
+    'category' => 'fe',
     'state' => 'stable',
-    'internal' => '',
-    'uploadfolder' => '0',
-    'createDirs' => '',
-    'clearCacheOnLoad' => 0,
-    'version' => '1.1.1',
+    'author' => 'fixpunkt für digitales GmbH',
+    'author_email' => 'office@fixpunkt.com',
+    'author_company' => 'fixpunkt für digitales GmbH',
+    'version' => '3.1.2',
     'constraints' => [
         'depends' => [
-            'typo3' => '10.4.21-11.5.99',
+            'typo3' => '12.0.0-13.99.99',
         ],
         'conflicts' => [],
         'suggests' => [],

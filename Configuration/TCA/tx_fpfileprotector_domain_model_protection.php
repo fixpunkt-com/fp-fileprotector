@@ -1,15 +1,17 @@
 <?php
-return array(
-	'ctrl' => array(
-        'title'	=> 'LLL:EXT:fp_fileprotector/Resources/Private/Language/locallang.xlf:tx_fpfileprotector_domain_model_protection',
+
+declare(strict_types=1);
+
+return [
+    'ctrl' => [
+        'title' => 'LLL:EXT:fp_fileprotector/Resources/Private/Language/locallang.xlf:tx_fpfileprotector_domain_model_protection',
         'label' => 'folder',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
-        'cruser_id' => 'cruser_id',
         'delete' => 'deleted',
         'searchFields' => 'folder',
         'iconfile' => 'EXT:fp_fileprotector/Resources/Public/Icons/Models/tx_fpfileprotector_domain_model_protection.svg'
-    ),
+    ],
     'palettes' => [
         'folder' => [
             'label' => 'LLL:EXT:fp_fileprotector/Resources/Private/Language/locallang.xlf:tx_fpfileprotector_domain_model_protection.palette.folder',
@@ -24,10 +26,10 @@ return array(
             'showitem' => 'be_login',
         ],
     ],
-    'types' => array(
+    'types' => [
         0 => ['showitem' => '--palette--;;folder,--palette--;;fe,--palette--;;be'],
-    ),
-	'columns' => array(
+    ],
+    'columns' => [
         'storage' => [
             'label' => 'LLL:EXT:fp_fileprotector/Resources/Private/Language/locallang.xlf:tx_fpfileprotector_domain_model_protection.storage',
             'onChange' => 'reload',
@@ -35,7 +37,7 @@ return array(
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
-                    ['', 0]
+                    ['label' => '', 'value' => 0]
                 ],
                 'foreign_table' => 'sys_file_storage',
                 'foreign_table_where' => 'AND {#sys_file_storage}.{#protected} = 1',
@@ -62,12 +64,6 @@ return array(
             'config' => [
                 'type' => 'check',
                 'renderType' => 'checkboxToggle',
-                'items' => [
-                    [
-                        0 => '',
-                        1 => '',
-                    ]
-                ],
             ]
         ],
         'be_login' => [
@@ -76,35 +72,29 @@ return array(
             'config' => [
                 'type' => 'check',
                 'renderType' => 'checkboxToggle',
-                'items' => [
-                    [
-                        0 => '',
-                        1 => '',
-                    ]
-                ],
             ]
         ],
-		'user_groups' => array(
-			'exclude' => 1,
-			'label' => 'LLL:EXT:fp_fileprotector/Resources/Private/Language/locallang.xlf:tx_fpfileprotector_domain_model_protection.user_groups',
+        'user_groups' => [
+            'exclude' => 1,
+            'label' => 'LLL:EXT:fp_fileprotector/Resources/Private/Language/locallang.xlf:tx_fpfileprotector_domain_model_protection.user_groups',
             'displayCond' => 'FIELD:fe_login:REQ:true',
-			'config' => array(
+            'config' => [
                 'type' => 'select',
                 'renderType' => 'selectMultipleSideBySide',
                 'foreign_table' => 'fe_groups',
-                'MM' => "tx_fpfileprotector_protection_fegroups_mm"
-			),
-		),
-        'users' => array(
+                'MM' => 'tx_fpfileprotector_protection_fegroups_mm'
+            ],
+        ],
+        'users' => [
             'exclude' => 1,
             'label' => 'LLL:EXT:fp_fileprotector/Resources/Private/Language/locallang.xlf:tx_fpfileprotector_domain_model_protection.users',
             'displayCond' => 'FIELD:fe_login:REQ:true',
-            'config' => array(
+            'config' => [
                 'type' => 'select',
                 'renderType' => 'selectMultipleSideBySide',
                 'foreign_table' => 'fe_users',
-                'MM' => "tx_fpfileprotector_protection_feusers_mm"
-            ),
-        ),
-	),
-);
+                'MM' => 'tx_fpfileprotector_protection_feusers_mm'
+            ],
+        ],
+    ],
+];

@@ -1,7 +1,10 @@
 <?php
-defined('TYPO3_MODE') or die();
 
-// Feld definieren
+declare(strict_types=1);
+
+defined('TYPO3') or die();
+
+// Define fields.
 $tempColumns = [
     'protected' => [
         'label' => 'LLL:EXT:fp_fileprotector/Resources/Private/Language/locallang.xlf:sys_file_storage.protected',
@@ -10,12 +13,6 @@ $tempColumns = [
         'config' => [
             'type' => 'check',
             'renderType' => 'checkboxToggle',
-            'items' => [
-                [
-                    0 => '',
-                    1 => '',
-                ]
-            ],
         ]
     ],
     'protected_by_default' => [
@@ -25,27 +22,21 @@ $tempColumns = [
         'config' => [
             'type' => 'check',
             'renderType' => 'checkboxToggle',
-            'items' => [
-                [
-                    0 => '',
-                    1 => '',
-                ]
-            ],
         ]
     ]
 ];
 
-// Feld der allgemeinen Datensatzbeschreibung hinzufügen - noch keine Ausgabe im Backend!
+// Add fields to the general record description without rendering them in the backend yet.
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('sys_file_storage', $tempColumns);
 
-// Feld einer neuen Palette hinzufügen
+// Add fields to a new palette.
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addFieldsToPalette(
     'sys_file_storage',
     'protection',
     'protected,protected_by_default'
 );
 
-// Neue Palette dem Tag hinzufügen, nach dem Titel - Dadurch Anzeige im Backend
+// Add the new palette after the title to render it in the backend.
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes(
     'sys_file_storage',
     '--palette--;LLL:EXT:fp_fileprotector/Resources/Private/Language/locallang.xlf:sys_file_storage.palette.protection;protection',
