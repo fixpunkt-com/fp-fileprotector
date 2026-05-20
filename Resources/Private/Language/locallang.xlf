@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2015-07-20T14:40:51Z" product-name="infothek">
+		<header/>
+		<body>
+			<!-- File Storage -->
+			<trans-unit id="sys_file_storage.palettes.protection">
+				<source>Zugriffsschutz</source>
+			</trans-unit>
+			<trans-unit id="sys_file_storage.protected">
+				<source>Geschützter File Storage</source>
+			</trans-unit>
+			<trans-unit id="sys_file_storage.protected_by_default">
+				<source>Bei fehlender Freigaberegel Zugriff verweigern</source>
+			</trans-unit>
+			<trans-unit id="sys_file_storage.htaccess_existing">
+				<source>.htaccess eingerichtet</source>
+			</trans-unit>
+
+			<!-- Protection -->
+			<trans-unit id="tx_fpfileprotector_domain_model_protection">
+				<source>Zugriffsschutz</source>
+			</trans-unit>
+			<trans-unit id="tx_fpfileprotector_domain_model_protection.palette.folder">
+				<source>Speicherort</source>
+			</trans-unit>
+			<trans-unit id="tx_fpfileprotector_domain_model_protection.palette.fe">
+				<source>Frontend</source>
+			</trans-unit>
+			<trans-unit id="tx_fpfileprotector_domain_model_protection.palette.be">
+				<source>Backend</source>
+			</trans-unit>
+			<trans-unit id="tx_fpfileprotector_domain_model_protection.storage">
+				<source>Storage</source>
+			</trans-unit>
+			<trans-unit id="tx_fpfileprotector_domain_model_protection.folder">
+				<source>Ordner</source>
+			</trans-unit>
+			<trans-unit id="tx_fpfileprotector_domain_model_protection.fe_login">
+				<source>Muss im Frontend eingeloggt sein</source>
+			</trans-unit>
+			<trans-unit id="tx_fpfileprotector_domain_model_protection.user_groups">
+				<source>Benutzer:innen-Gruppen</source>
+			</trans-unit>
+			<trans-unit id="tx_fpfileprotector_domain_model_protection.users">
+				<source>Benutzer:innen</source>
+			</trans-unit>
+			<trans-unit id="tx_fpfileprotector_domain_model_protection.be_login">
+				<source>Muss im Backend eingeloggt sein</source>
+			</trans-unit>
+
+			<!-- FlashMessages -->
+			<trans-unit id="tx_fpfileprotector_domain_model_protection.flashmessages.created">
+				<source>Der Zugriffsschutz wurde angelegt.</source>
+			</trans-unit>
+			<trans-unit id="tx_fpfileprotector_domain_model_protection.flashmessages.updated">
+				<source>Der Zugriffsschutz wurde aktualisiert.</source>
+			</trans-unit>
+			<trans-unit id="tx_fpfileprotector_domain_model_protection.flashmessages.deleted">
+				<source>Der Zugriffsschutz wurde entfernt.</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

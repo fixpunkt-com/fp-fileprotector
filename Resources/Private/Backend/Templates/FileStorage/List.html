@@ -1,0 +1,84 @@
+<f:layout name="Default" />
+
+<f:section name="main">
+    <h2>Storage Übersicht</h2>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th><f:translate key="LLL:EXT:core/Resources/Private/Language/locallang_tca.xlf:sys_file_storage.name" /></th>
+            <th><f:translate key="sys_file_storage.protected" /></th>
+            <th><f:translate key="sys_file_storage.protected_by_default" /></th>
+            <th><f:translate key="sys_file_storage.htaccess_existing" /></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <f:for each="{fileStorages}" as="fileStorage">
+            <tr class="{f:if(condition : fileStorage.protected, then : 'bg-warning')}">
+                <td>{fileStorage.name}</td>
+                <td>
+                    <f:if condition="{fileStorage.protected}">
+                        <f:then><i class="fa fa-fw fa-check"></i></f:then>
+                        <f:else><i class="fa fa-fw fa-times"></i></f:else>
+                    </f:if>
+                </td>
+                <td>
+                    <f:if condition="{fileStorage.protectedByDefault}">
+                        <f:then><i class="fa fa-fw fa-check"></i></f:then>
+                        <f:else><i class="fa fa-fw fa-times"></i></f:else>
+                    </f:if>
+                </td>
+                <td>
+                    <f:if condition="{fileStorage.htaccess}">
+                        <f:then>
+                            <f:if condition="{fileStorage.protected}">
+                                <f:then>
+                                    <span class="text-success"><i class="fa fa-fw fa-check"></i></span>
+                                </f:then>
+                                <f:else>
+                                    <div class="text-danger">
+                                        <i class="fa fa-fw fa-check"></i> ACHTUNG!
+                                        <div class="small">.htaccess eingerichtet, obwohl kein Schutz bestehen soll!</div>
+                                        <div class="small"><strong>
+                                            <f:link.action action="htaccess" class="text-danger" arguments="{fileStorageUid : fileStorage.uid}">
+                                                .htaccess Datei anpassen
+                                            </f:link.action>
+                                        </strong></div>
+                                    </div>
+                                </f:else>
+                            </f:if>
+                        </f:then>
+                        <f:else>
+                            <f:if condition="{fileStorage.protected}">
+                                <f:then>
+                                    <div class="text-danger">
+                                        <i class="fa fa-fw fa-times"></i> ACHTUNG!
+                                        <div class="small">Keine .htaccess eingerichtet, obwohl Schutz bestehen soll!</div>
+                                        <div class="small"><strong>
+                                            <f:link.action action="htaccess" class="text-danger" arguments="{fileStorageUid : fileStorage.uid}">
+                                                .htaccess Datei anpassen
+                                            </f:link.action>
+                                        </strong></div>
+                                    </div>
+                                </f:then>
+                                <f:else>
+                                    <span class="text-success"><i class="fa fa-fw fa-times"></i></span>
+                                </f:else>
+                            </f:if>
+                        </f:else>
+                    </f:if>
+                </td>
+                <td class="text-right">
+                    <f:link.action action="edit" class="btn btn-default" arguments="{fileStorageUid : fileStorage.uid}">
+                        <i class="fa fa-fw fa-edit"></i>
+                    </f:link.action>
+                    <f:link.action action="show" class="btn btn-default" arguments="{fileStorageUid : fileStorage.uid}">
+                        <i class="fa fa-fw fa-eye"></i>
+                    </f:link.action>
+                </td>
+            </tr>
+        </f:for>
+        </tbody>
+    </table>
+</f:section>

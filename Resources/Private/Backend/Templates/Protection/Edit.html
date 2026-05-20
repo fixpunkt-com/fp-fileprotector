@@ -1,0 +1,14 @@
+<f:layout name="Default" />
+
+<f:section name="main">
+    <h2>Zugriffsschutz für Ordner <span class="text-info">{folder.name}</span> aktualisieren</h2>
+
+
+    <f:form action="update" object="{protection}" objectName="protection">
+        <f:render partial="Protection/FormFields" arguments="{_all}" />
+        <div>
+            <f:link.action action="list" class="btn btn-default">Verwerfen</f:link.action>
+            <f:form.button type="submit" class="btn btn-success">Zugriffsschutz aktualisieren</f:form.button>
+        </div>
+    </f:form>
+</f:section>
