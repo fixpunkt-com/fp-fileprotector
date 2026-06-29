@@ -38,35 +38,38 @@ and folders
 ----
 
 ..  card-grid::
-    :columns-left: 4
-    :columns-center: 4
-    :columns-right: 4
-    :gap: 6
-    :class: with-shadow
+    :columns: 1
+    :columns-md: 2
+    :gap: 4
+    :card-height: 100
 
     ..  card:: Introduction
-        :link: introduction
-        :link-type: ref
 
         What is fp-fileprotector and how does it work?
 
+        ..  card-footer:: :ref:`Get small introduction to fp-fileprotector <introduction>`
+            :button-style: btn btn-secondary stretched-link
+
     ..  card:: Configuration
-        :link: configuration
-        :link-type: ref
 
         How to protect a file storage.
 
+        ..  card-footer:: :ref:`See how you can configure the storage behaviour <configuration>`
+            :button-style: btn btn-secondary stretched-link
+
     ..  card:: Usage
-        :link: usage
-        :link-type: ref
 
         How to define access rules for folders.
 
+        ..  card-footer:: :ref:`Learn how fp-fileprotector is used <usage>`
+            :button-style: btn btn-secondary stretched-link
+
     ..  card:: Troubleshooting
-        :link: known-problems
-        :link-type: ref
 
         Common issues and solutions.
+
+        ..  card-footer:: :ref:`See known problems <known-problems>`
+            :button-style: btn btn-secondary stretched-link
 
 ..  toctree::
     :hidden:
