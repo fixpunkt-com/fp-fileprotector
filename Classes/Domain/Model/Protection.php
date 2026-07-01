@@ -6,8 +6,6 @@ namespace Fixpunkt\FpFileprotector\Domain\Model;
 
 use Fixpunkt\FpFileprotector\Domain\Repository\FolderRepository;
 use Fixpunkt\FpFileprotector\Resource\Folder;
-use Fixpunkt\FpFileprotector\Utility\FrontendUserUtility;
-use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
@@ -177,50 +175,12 @@ class Protection extends AbstractEntity
     }
 
     /**
-     * Checks whether the current user is allowed to access the resource.
-     *
-     * @return bool
-     */
-    public function isGranted(): bool
-    {
-        if ($this->isFeLogin()) {
-            $frontendUserUtility = GeneralUtility::makeInstance(FrontendUserUtility::class);
-            $feUser = $frontendUserUtility->getCurrentFrontendUser();
-            if ($feUser && $feUser->isLoggedIn()) {
-                if ($this->getUserGroups()->count() === 0 && $this->getUsers()->count() === 0) {
-                    return true;
-                }
-
-                if (in_array($feUser->get('id'), $this->getUsersUids(), true)) {
-                    return true;
-                }
-
-                foreach ($feUser->get('groupIds') as $userGroupId) {
-                    if (in_array($userGroupId, $this->getUserGroupsUids(), true)) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        $context = GeneralUtility::makeInstance(Context::class);
-        if (
-            $this->isBeLogin()
-            && (bool)$context->getPropertyFromAspect('backend.user', 'isLoggedIn')
-        ) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Returns whether the folder protection applies any restrictions.
+     * Returns whether the folder protection applies any FE restrictions.
      *
      * @return bool
      */
     public function isProtected(): bool
     {
-        return $this->isFeLogin() || $this->isBeLogin();
+        return $this->isFeLogin();
     }
 }
