@@ -21,13 +21,9 @@ return [
             'label' => 'LLL:EXT:fp_fileprotector/Resources/Private/Language/locallang.xlf:tx_fpfileprotector_domain_model_protection.palette.fe',
             'showitem' => 'fe_login,--linebreak--,user_groups,--linebreak--,users',
         ],
-        'be' => [
-            'label' => 'LLL:EXT:fp_fileprotector/Resources/Private/Language/locallang.xlf:tx_fpfileprotector_domain_model_protection.palette.be',
-            'showitem' => 'be_login',
-        ],
     ],
     'types' => [
-        0 => ['showitem' => '--palette--;;folder,--palette--;;fe,--palette--;;be'],
+        0 => ['showitem' => '--palette--;;folder,--palette--;;fe'],
     ],
     'columns' => [
         'storage' => [

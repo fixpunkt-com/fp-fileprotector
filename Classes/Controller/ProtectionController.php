@@ -9,6 +9,7 @@ use Fixpunkt\FpFileprotector\Domain\Repository\FolderRepository;
 use Fixpunkt\FpFileprotector\Domain\Repository\FrontendUserGroupRepository;
 use Fixpunkt\FpFileprotector\Domain\Repository\FrontendUserRepository;
 use Fixpunkt\FpFileprotector\Domain\Repository\ProtectionRepository;
+use Fixpunkt\FpFileprotector\Service\AccessService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
@@ -28,6 +29,7 @@ class ProtectionController extends ActionController
         protected readonly FrontendUserGroupRepository $userGroupRepository,
         protected readonly FrontendUserRepository $userRepository,
         protected readonly FolderRepository $folderRepository,
+        protected readonly AccessService $accessService,
     ) {
         $querySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
         $querySettings->setRespectStoragePage(false);
@@ -50,6 +52,7 @@ class ProtectionController extends ActionController
             'folder' => $this->folderRepository->findOneByCombinedIdentifier($combinedIdentifier),
             'userGroups' => $this->userGroupRepository->findAll(),
             'users' => $this->userRepository->findAll(),
+            'accessPartials' => $this->accessService->getPartials(),
         ]);
 
         return $moduleTemplate->renderResponse('Protection/New');
@@ -87,6 +90,7 @@ class ProtectionController extends ActionController
             'folder' => $protection->getFolderObject(),
             'userGroups' => $this->userGroupRepository->findAll(),
             'users' => $this->userRepository->findAll(),
+            'accessPartials' => $this->accessService->getPartials(),
         ]);
 
         return $moduleTemplate->renderResponse('Protection/Edit');

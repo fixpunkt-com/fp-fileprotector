@@ -13,6 +13,7 @@ public
 public/*
 index.html
 composer.lock
+.DS_Store
 
 
 # User-specific stuff:
