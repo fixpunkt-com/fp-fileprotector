@@ -13,7 +13,7 @@ class BeLoginAccessUtility implements AccessUtilityInterface
     {
         /** @var BackendUserAuthentication|null $beUser */
         $beUser = $GLOBALS['BE_USER'] ?? null;
-        if (!$beUser || !$beUser->isLoggedIn()) {
+        if (!$beUser || empty($beUser->user['uid'])) {
             return false;
         }
 
