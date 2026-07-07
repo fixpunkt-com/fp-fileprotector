@@ -31,4 +31,14 @@ class AccessService
         }
         return $partials;
     }
+
+    /** @return string[] */
+    public function getPropertiesPartials(): array
+    {
+        $partials = [];
+        foreach ($this->accessUtilities as $utility) {
+            $partials[] = $utility->getPropertiesPartial();
+        }
+        return $partials;
+    }
 }

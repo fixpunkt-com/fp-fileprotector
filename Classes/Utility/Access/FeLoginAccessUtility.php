@@ -43,4 +43,9 @@ class FeLoginAccessUtility implements AccessUtilityInterface
     {
         return 'Access/Fe';
     }
+
+    public function getPropertiesPartial(): string
+    {
+        return 'Properties/Fe';
+    }
 }

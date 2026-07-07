@@ -44,7 +44,7 @@
                     <f:if condition="{folder.protected}">
                         <f:then>
                             <div style="margin-top: 15px;">
-                                <f:render partial="Protection/Properties" arguments="{protection : folder.protection}" />
+                                <f:render partial="Protection/Properties" arguments="{protection : folder.protection, propertiesPartials : propertiesPartials}" />
                             </div>
                         </f:then>
                         <f:else>

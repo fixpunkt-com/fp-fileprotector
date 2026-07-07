@@ -10,4 +10,5 @@ interface AccessUtilityInterface
 {
     public function isGranted(Protection $protection): bool;
     public function getPartial(): string;
+    public function getPropertiesPartial(): string;
 }

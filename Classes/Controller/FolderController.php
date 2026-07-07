@@ -6,6 +6,7 @@ namespace Fixpunkt\FpFileprotector\Controller;
 
 use Fixpunkt\FpFileprotector\Domain\Repository\FolderRepository;
 use Fixpunkt\FpFileprotector\Resource\Folder;
+use Fixpunkt\FpFileprotector\Service\AccessService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
@@ -29,6 +30,7 @@ class FolderController extends ActionController
         protected readonly IconFactory $iconFactory,
         protected readonly FolderRepository $folderRepository,
         protected readonly StorageRepository $storageRepository,
+        protected readonly AccessService $accessService,
     ) {}
 
     /**
@@ -56,7 +58,10 @@ class FolderController extends ActionController
         $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
         $this->initializeDocHeader($moduleTemplate, $folder);
         $this->statusCheck($folder);
-        $moduleTemplate->assign('folder', $folder);
+        $moduleTemplate->assignMultiple([
+            'folder' => $folder,
+            'propertiesPartials' => $this->accessService->getPropertiesPartials(),
+        ]);
         return $moduleTemplate->renderResponse('Folder/Show');
     }
 
