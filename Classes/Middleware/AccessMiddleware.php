@@ -17,7 +17,6 @@ use TYPO3\CMS\Core\Resource\ProcessedFile;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Resource\StorageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class AccessMiddleware implements MiddlewareInterface
 {
@@ -47,7 +46,7 @@ class AccessMiddleware implements MiddlewareInterface
 
         $storage = $this->getStorage($storageIdentifier);
         if (!$storage) {
-            return $this->createError($this->translate('sys_file_storage.errors.storage_not_found'));
+            return $this->createError('The storage could not be found.');
         }
         $protected = $storage->getStorageRecord()['protected'];
         $protectedByDefault = $storage->getStorageRecord()['protected_by_default'];
@@ -68,7 +67,7 @@ class AccessMiddleware implements MiddlewareInterface
                 )
             )
         ) {
-            return $this->createError($this->translate('sys_file_storage.errors.file_not_found'));
+            return $this->createError('The file could not be found.');
         }
         $originalFile = $file;
         if ($originalFile instanceof ProcessedFile) {
@@ -81,14 +80,14 @@ class AccessMiddleware implements MiddlewareInterface
 
         $folder = $originalFile->getParentFolder();
         if (!$folder) {
-            return $this->createError($this->translate('sys_file_storage.errors.folder_not_found'));
+            return $this->createError('The storage location could not be found.');
         }
 
         $protection = ProtectionRepository::getProtectionStatic($folder);
         if ((!$protection && !$protectedByDefault) || ($protection && $this->accessService->isGranted($protection))) {
             return $this->releaseFile($storage, $filePath);
         }
-        return $this->createError($this->translate('sys_file_storage.errors.access_denied'), 500);
+        return $this->createError('You do not have permission to access this file.', 500);
     }
 
     /**
@@ -108,15 +107,6 @@ class AccessMiddleware implements MiddlewareInterface
             }
         }
         return null;
-    }
-
-    private function translate(string $key): string
-    {
-        try {
-            return LocalizationUtility::translate($key, 'FpFileprotector') ?? $key;
-        } catch (\Throwable) {
-            return $key;
-        }
     }
 
     /**
@@ -146,7 +136,7 @@ class AccessMiddleware implements MiddlewareInterface
     {
         $file = $storage->getFile($fileIdentifier);
         if (!$file) {
-            return $this->createError($this->translate('sys_file_storage.errors.file_release_not_found'));
+            return $this->createError('The requested file could not be found.');
         }
 
         $body = new Stream('php://temp', 'rw');
