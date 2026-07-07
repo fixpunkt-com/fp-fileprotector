@@ -95,9 +95,9 @@ class FolderController extends ActionController
         $moduleTemplate->getDocHeaderComponent()->setMetaInformationForResource($folder);
 
         $editStorageUri = $this->uriBuilder->reset()
-            ->uriFor('edit', ['fileStorageUid' => $folder->getStorage()->getUid()], 'FileStorage');
+            ->uriFor('edit', ['fileStorageUid' => $folder->getStorage()->getUid(), 'id' => $folder->getCombinedIdentifier()], 'FileStorage');
         $htaccessUri = $this->uriBuilder->reset()
-            ->uriFor('htaccess', ['fileStorageUid' => $folder->getStorage()->getUid()], 'FileStorage');
+            ->uriFor('htaccess', ['fileStorageUid' => $folder->getStorage()->getUid(), 'id' => $folder->getCombinedIdentifier()], 'FileStorage');
 
         // add buttons
         $buttonBar = $moduleTemplate->getDocHeaderComponent()->getButtonBar();
