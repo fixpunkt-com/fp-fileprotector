@@ -20,7 +20,6 @@ class FrontendUserUtility
         try {
             /** @var Context $context */
             $context = GeneralUtility::makeInstance(Context::class);
-            /** @var UserAspect $userAspect */
             return $context->getAspect('frontend.user');
         } catch (\Exception) {
             return null;

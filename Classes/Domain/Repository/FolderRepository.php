@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fixpunkt\FpFileprotector\Domain\Repository;
 
-use TYPO3\CMS\Core\Resource\Folder;
+use Fixpunkt\FpFileprotector\Resource\Folder;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -19,7 +19,8 @@ class FolderRepository
     public function findOneByCombinedIdentifier(string $combinedIdentifier): ?Folder
     {
         $resourceFactory = GeneralUtility::makeInstance(ResourceFactory::class);
-        /** @var Folder $folder */
-        return $resourceFactory->getFolderObjectFromCombinedIdentifier($combinedIdentifier);
+        $folder = $resourceFactory->getFolderObjectFromCombinedIdentifier($combinedIdentifier);
+        // The core Folder is XCLASSed to our subclass (see ext_localconf.php).
+        return $folder instanceof Folder ? $folder : null;
     }
 }

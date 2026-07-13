@@ -71,7 +71,7 @@ class AccessMiddleware implements MiddlewareInterface
         }
         $originalFile = $file;
         if ($originalFile instanceof ProcessedFile) {
-            $originalFile = $file->getOriginalFile();
+            $originalFile = $originalFile->getOriginalFile();
         }
 
         if (!$protected) {
@@ -79,9 +79,6 @@ class AccessMiddleware implements MiddlewareInterface
         }
 
         $folder = $originalFile->getParentFolder();
-        if (!$folder) {
-            return $this->createError('The storage location could not be found.');
-        }
 
         $protection = ProtectionRepository::getProtectionStatic($folder);
         if ((!$protection && !$protectedByDefault) || ($protection && $this->accessService->isGranted($protection))) {
@@ -135,9 +132,6 @@ class AccessMiddleware implements MiddlewareInterface
     private function releaseFile(ResourceStorage $storage, string $fileIdentifier): Response
     {
         $file = $storage->getFile($fileIdentifier);
-        if (!$file) {
-            return $this->createError('The requested file could not be found.');
-        }
 
         $body = new Stream('php://temp', 'rw');
         $body->write($file->getContents());

@@ -119,17 +119,19 @@ class FolderController extends ActionController
                 ->setIcon($this->iconFactory->getIcon('tx-fpfileprotector-folder-public'))
                 ->setLabel(LocalizationUtility::translate('module.storage_is_unprotected', 'FpFileprotector'));
         }
+        $storageSettingsItem = GeneralUtility::makeInstance(DropDownItem::class);
+        $storageSettingsItem
+            ->setLabel(LocalizationUtility::translate('module.dropdown.storage_settings', 'FpFileprotector'))
+            ->setHref($editStorageUri);
+
+        $htaccessItem = GeneralUtility::makeInstance(DropDownItem::class);
+        $htaccessItem
+            ->setLabel(LocalizationUtility::translate('module.dropdown.htaccess_update', 'FpFileprotector'))
+            ->setHref($htaccessUri);
+
         $dropdownButton
-        ->addItem(
-            GeneralUtility::makeInstance(DropDownItem::class)
-                ->setLabel(LocalizationUtility::translate('module.dropdown.storage_settings', 'FpFileprotector'))
-                ->setHref($editStorageUri)
-        )
-        ->addItem(
-            GeneralUtility::makeInstance(DropDownItem::class)
-                ->setLabel(LocalizationUtility::translate('module.dropdown.htaccess_update', 'FpFileprotector'))
-                ->setHref($htaccessUri)
-        );
+            ->addItem($storageSettingsItem)
+            ->addItem($htaccessItem);
         $buttonBar->addButton($dropdownButton, ButtonBar::BUTTON_POSITION_RIGHT);
     }
 

@@ -40,7 +40,6 @@ class FileStorageController extends ActionController
     /**
      * Updates settings of a file storage.
      *
-     * @param int $id
      * @param int $fileStorageUid
      * @param bool $protected
      * @param bool $protectedByDefault

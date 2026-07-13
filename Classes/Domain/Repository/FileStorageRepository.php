@@ -29,7 +29,11 @@ class FileStorageRepository
         $resourceFactory = GeneralUtility::makeInstance(ResourceFactory::class);
         try {
             foreach ($query->fetchAllAssociative() as $data) {
-                $fileStorages[] = $resourceFactory->getStorageObject($data['uid']);
+                $storage = $resourceFactory->getStorageObject($data['uid']);
+                // The core storage is XCLASSed to our subclass (see ext_localconf.php).
+                if ($storage instanceof ResourceStorage) {
+                    $fileStorages[] = $storage;
+                }
             }
         } catch (Exception) {
         }
@@ -46,7 +50,15 @@ class FileStorageRepository
     {
         /** @var ResourceFactory $resourceFactory */
         $resourceFactory = GeneralUtility::makeInstance(ResourceFactory::class);
-        return $resourceFactory->getStorageObject($fileStorageUid);
+        $storage = $resourceFactory->getStorageObject($fileStorageUid);
+        // The core storage is XCLASSed to our subclass (see ext_localconf.php).
+        if (!$storage instanceof ResourceStorage) {
+            throw new \RuntimeException(
+                'Expected an instance of ' . ResourceStorage::class . ', got ' . $storage::class . '.',
+                1752480001
+            );
+        }
+        return $storage;
     }
 
     /**

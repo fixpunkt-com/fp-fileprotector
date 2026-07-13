@@ -18,6 +18,24 @@ class Folder extends Core\Folder
     protected $storage;
 
     /**
+     * Returns the storage this folder belongs to.
+     *
+     * The core storage is XCLASSed to our subclass (see ext_localconf.php),
+     * so we can safely narrow the return type.
+     */
+    public function getStorage(): ResourceStorage
+    {
+        $storage = parent::getStorage();
+        if (!$storage instanceof ResourceStorage) {
+            throw new \RuntimeException(
+                'Expected an instance of ' . ResourceStorage::class . ', got ' . $storage::class . '.',
+                1752480000
+            );
+        }
+        return $storage;
+    }
+
+    /**
      * Returns protection for this folder or one of its parent folders.
      *
      * @param bool $recursive

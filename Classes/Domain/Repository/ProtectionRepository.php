@@ -6,6 +6,7 @@ namespace Fixpunkt\FpFileprotector\Domain\Repository;
 
 use Doctrine\DBAL\ParameterType;
 use Fixpunkt\FpFileprotector\Domain\Model\Protection;
+use Fixpunkt\FpFileprotector\Resource\Folder;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Resource\FolderInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -32,7 +33,8 @@ class ProtectionRepository extends Repository
         );
         $results = $query->execute();
 
-        return $results->current() ?: null;
+        $protection = $results->current();
+        return $protection instanceof Protection ? $protection : null;
     }
 
     /**
@@ -45,7 +47,8 @@ class ProtectionRepository extends Repository
     public function getProtection(FolderInterface $folder, bool $recursive = true): ?Protection
     {
         $protection = $this->findOneByFolder($folder);
-        if (!$protection && $recursive && $folder->hasParentFolder()) {
+        // hasParentFolder() only exists on our XCLASSed Folder subclass.
+        if (!$protection && $recursive && $folder instanceof Folder && $folder->hasParentFolder()) {
             return $this->getProtection($folder->getParentFolder());
         }
         return $protection;
@@ -76,7 +79,8 @@ class ProtectionRepository extends Repository
         $protections = $dataMapper->map(Protection::class, $statement->fetchAllAssociative());
         $protection = count($protections) ? $protections[0] : null;
 
-        if (!$protection && $folder->hasParentFolder()) {
+        // hasParentFolder() only exists on our XCLASSed Folder subclass.
+        if (!$protection && $folder instanceof Folder && $folder->hasParentFolder()) {
             return self::getProtectionStatic($folder->getParentFolder());
         }
         return $protection;
