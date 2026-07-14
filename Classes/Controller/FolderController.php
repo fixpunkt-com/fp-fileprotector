@@ -39,7 +39,7 @@ class FolderController extends ActionController
      * @param string $id
      * @return ResponseInterface
      */
-    public function showAction(string $id = "", bool $refreshFolderTree = false): ResponseInterface
+    public function showAction(string $id = '', bool $refreshFolderTree = false): ResponseInterface
     {
         // modify id or redirect to first folder
         $id = $this->modifyId($id);
@@ -93,7 +93,6 @@ class FolderController extends ActionController
      *
      * @param ModuleTemplate $moduleTemplate
      * @param Folder $folder
-     * @return void
      */
     protected function initializeDocHeader(ModuleTemplate $moduleTemplate, Folder $folder): void
     {
@@ -161,8 +160,8 @@ class FolderController extends ActionController
             $moduleData->set('id', $id);
             $GLOBALS['BE_USER']->pushModuleData($moduleData->getModuleIdentifier(), $moduleData->toArray());
             return $id;
-        } else {
-            return $moduleData->get('id', '');
         }
+        return $moduleData->get('id', '');
+
     }
 }

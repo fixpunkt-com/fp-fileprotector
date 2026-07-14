@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace Fixpunkt\FpFileprotector\Domain\Repository;
 
-use Doctrine\DBAL\Driver\Exception;
 use Fixpunkt\FpFileprotector\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Database\Query\QueryBuilder;
-use TYPO3\CMS\Core\Resource\ResourceFactory;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Resource\StorageRepository;
 
 class FileStorageRepository
 {
+    public function __construct(
+        private readonly StorageRepository $storageRepository,
+        private readonly ConnectionPool $connectionPool,
+    ) {}
+
     /**
      * Returns all file storages.
      *
@@ -20,41 +22,26 @@ class FileStorageRepository
      */
     public function findAll(): array
     {
-        /** @var QueryBuilder $queryBuilder */
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable('sys_file_storage')->createQueryBuilder();
-        $query = $queryBuilder
-            ->select('uid')->from('sys_file_storage')->executeQuery();
-
         $fileStorages = [];
-        $resourceFactory = GeneralUtility::makeInstance(ResourceFactory::class);
-        try {
-            foreach ($query->fetchAllAssociative() as $data) {
-                $storage = $resourceFactory->getStorageObject($data['uid']);
-                // The core storage is XCLASSed to our subclass (see ext_localconf.php).
-                if ($storage instanceof ResourceStorage) {
-                    $fileStorages[] = $storage;
-                }
+        foreach ($this->storageRepository->findAll() as $storage) {
+            // The core storage is XCLASSed to our subclass (see ext_localconf.php).
+            if ($storage instanceof ResourceStorage) {
+                $fileStorages[] = $storage;
             }
-        } catch (Exception) {
         }
         return $fileStorages;
     }
 
     /**
      * Returns a single resource storage.
-     *
-     * @param int $fileStorageUid
-     * @return ResourceStorage
      */
     public function findByIdentifier(int $fileStorageUid): ResourceStorage
     {
-        /** @var ResourceFactory $resourceFactory */
-        $resourceFactory = GeneralUtility::makeInstance(ResourceFactory::class);
-        $storage = $resourceFactory->getStorageObject($fileStorageUid);
+        $storage = $this->storageRepository->findByUid($fileStorageUid);
         // The core storage is XCLASSed to our subclass (see ext_localconf.php).
         if (!$storage instanceof ResourceStorage) {
             throw new \RuntimeException(
-                'Expected an instance of ' . ResourceStorage::class . ', got ' . $storage::class . '.',
+                'Expected an instance of ' . ResourceStorage::class . ', got ' . ($storage === null ? 'null' : $storage::class) . '.',
                 1752480001
             );
         }
@@ -63,13 +50,10 @@ class FileStorageRepository
 
     /**
      * Updates a file storage.
-     *
-     * @param ResourceStorage $fileStorage
      */
     public function update(ResourceStorage $fileStorage): void
     {
-        /** @var QueryBuilder $queryBuilder */
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable('sys_file_storage')->createQueryBuilder();
+        $queryBuilder = $this->connectionPool->getConnectionForTable('sys_file_storage')->createQueryBuilder();
         $queryBuilder
             ->update('sys_file_storage')
             ->set('protected', (int)$fileStorage->isProtected())

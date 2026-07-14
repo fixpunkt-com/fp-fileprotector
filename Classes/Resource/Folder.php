@@ -14,9 +14,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class Folder extends Core\Folder
 {
-    /** @var ResourceStorage */
-    protected $storage;
-
     /**
      * Returns the storage this folder belongs to.
      *
@@ -86,10 +83,10 @@ class Folder extends Core\Folder
         if ($protection && $protection->isProtected()) {
             // protection is set
             return $this->getOwnProtection() ? 'protected' : 'protected_by_parent';
-        } else {
-            // no protection is set
-            return $this->storage->isProtectedByDefault() ? 'no_access' : 'public';
         }
+        // no protection is set
+        return $this->getStorage()->isProtectedByDefault() ? 'no_access' : 'public';
+
     }
 
     /**
