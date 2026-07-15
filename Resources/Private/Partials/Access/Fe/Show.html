@@ -3,28 +3,28 @@
     <label for="feLogin">
       <f:translate key="tx_fpfileprotector_domain_model_protection.fe_login" />:
     </label><br>
-    <f:if condition="{protection.feLogin}">
+    <f:if condition="{protection.fe_login}">
       <f:then><span class="text-success"><f:translate key="general.yes" /></span></f:then>
       <f:else><span class="text-danger"><f:translate key="general.no" /></span></f:else>
     </f:if>
   </div>
 </div>
-<f:if condition="{protection.feLogin}">
-  <f:if condition="{protection.userGroups -> f:count()}">
+<f:if condition="{protection.fe_login}">
+  <f:if condition="{protection.user_groups}">
     <div class="col-xs-12 col-md-4">
       <div class="form-group">
         <label for="userGroups">
           <f:translate key="tx_fpfileprotector_domain_model_protection.user_groups" />:
         </label>
         <ul>
-          <f:for each="{protection.userGroups}" as="userGroup">
-            <li>{userGroup.title}</li>
+          <f:for each="{protection.user_groups}" as="userGroup">
+            <li>{userGroup.label}</li>
           </f:for>
         </ul>
       </div>
     </div>
   </f:if>
-  <f:if condition="{protection.users -> f:count()}">
+  <f:if condition="{protection.users}">
     <div class="col-xs-12 col-md-4">
       <div class="form-group">
         <label for="users">
@@ -32,7 +32,7 @@
         </label>
         <ul>
           <f:for each="{protection.users}" as="user">
-            <li>{user.username}</li>
+            <li>{user.label}</li>
           </f:for>
         </ul>
       </div>

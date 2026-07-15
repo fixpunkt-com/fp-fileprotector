@@ -7,6 +7,7 @@ namespace Fixpunkt\FpFileprotector\Controller;
 use Fixpunkt\FpFileprotector\Domain\Repository\FolderRepository;
 use Fixpunkt\FpFileprotector\Resource\Folder;
 use Fixpunkt\FpFileprotector\Service\AccessService;
+use Fixpunkt\FpFileprotector\Service\ProtectionService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
@@ -31,6 +32,7 @@ class FolderController extends ActionController
         protected readonly FolderRepository $folderRepository,
         protected readonly StorageRepository $storageRepository,
         protected readonly AccessService $accessService,
+        protected readonly ProtectionService $protectionService,
     ) {}
 
     /**
@@ -58,18 +60,37 @@ class FolderController extends ActionController
         $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
         $this->initializeDocHeader($moduleTemplate, $folder);
         $this->statusCheck($folder);
+
+        $protection = $folder->getProtection();
         $moduleTemplate->assignMultiple([
             'folder' => $folder,
-            'partials' => $this->accessService->getPartials(),
+            'accessPartials' => $this->accessService->getPartials(),
+            'protectionDisplay' => $protection ? $this->protectionService->getDisplayValues((int)$protection['uid']) : [],
+            'inheritedFolder' => $this->getInheritedFolder($folder, $protection),
         ]);
         return $moduleTemplate->renderResponse('Folder/Show');
+    }
+
+    /**
+     * Returns the folder an inherited protection originates from, or null when
+     * the folder has its own (or no) protection.
+     *
+     * @param array<string, mixed>|null $protection
+     */
+    protected function getInheritedFolder(Folder $folder, ?array $protection): ?Folder
+    {
+        if ($protection === null || $folder->getOwnProtection() !== null) {
+            return null;
+        }
+        $combinedIdentifier = $protection['storage'] . ':' . $protection['folder'];
+        return $this->folderRepository->findOneByCombinedIdentifier($combinedIdentifier);
     }
 
     protected function statusCheck(Folder $folder): void
     {
         // show information if the storage is NOT protected
         if (!$folder->getStorage()->isProtected()) {
-            if ($folder->isProtected()) {
+            if ($folder->getProtection() !== null) {
                 $this->addFlashMessage(
                     LocalizationUtility::translate('folder.show.storage_not_protected_with_rule', 'FpFileprotector'),
                     LocalizationUtility::translate('folder.show.storage_not_protected', 'FpFileprotector'),

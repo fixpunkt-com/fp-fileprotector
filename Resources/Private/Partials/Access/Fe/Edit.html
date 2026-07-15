@@ -3,7 +3,7 @@
 </h3>
 <div class="checkbox">
     <label for="feLogin">
-        <f:form.checkbox value="1" property="feLogin" />
+        <f:form.checkbox id="feLogin" name="access[fe_login]" value="1" checked="{record.fe_login}" />
         <f:translate key="tx_fpfileprotector_domain_model_protection.fe_login" />
     </label>
 </div>
@@ -13,8 +13,9 @@
             <label for="userGroups">
                 <f:translate key="tx_fpfileprotector_domain_model_protection.user_groups" />
             </label>
-            <f:form.select multiple="1" size="3" sortByOptionLabel="1" options="{userGroups}" optionValueField="uid"
-                optionLabelField="title" property="userGroups" class="form-control" />
+            <f:form.select id="userGroups" name="access[user_groups]" multiple="1" size="3" sortByOptionLabel="1"
+                options="{userGroups}" optionValueField="uid" optionLabelField="title" value="{record.user_groups}"
+                class="form-control" />
             <div class="small">
                 <div class="text-muted">
                     <f:translate key="protection.form.multiselect_hint" />
@@ -33,8 +34,9 @@
             <label for="users">
                 <f:translate key="tx_fpfileprotector_domain_model_protection.users" />
             </label>
-            <f:form.select multiple="1" size="3" sortByOptionLabel="1" options="{users}" optionValueField="uid"
-                optionLabelField="username" property="users" class="form-control" />
+            <f:form.select id="users" name="access[users]" multiple="1" size="3" sortByOptionLabel="1"
+                options="{users}" optionValueField="uid" optionLabelField="username" value="{record.users}"
+                class="form-control" />
             <div class="small">
                 <div class="text-muted">
                     <f:translate key="protection.form.multiselect_hint" />

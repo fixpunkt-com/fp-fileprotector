@@ -17,7 +17,7 @@
                             </f:then>
                             <f:else>
                                 <f:format.raw>
-                                    <f:translate key="folder.show.inherited_protection" arguments="{0 : '{folder.protection.folderObject.speakingName -> f:link.action(action : \'show\', arguments : \'{id : folder.protection.folderObject.combinedIdentifier}\')}'}" />
+                                    <f:translate key="folder.show.inherited_protection" arguments="{0 : '{inheritedFolder.speakingName -> f:link.action(action : \'show\', arguments : \'{id : inheritedFolder.combinedIdentifier}\')}'}" />
                                 </f:format.raw>
                             </f:else>
                         </f:if>
@@ -44,7 +44,7 @@
                     <f:if condition="{folder.protected}">
                         <f:then>
                             <div style="margin-top: 15px;">
-                                <f:render partial="Protection/Properties" arguments="{protection : folder.protection, propertiesPartials : propertiesPartials}" />
+                                <f:render partial="Protection/Properties" arguments="{protection : protectionDisplay, accessPartials : accessPartials}" />
                             </div>
                         </f:then>
                         <f:else>
@@ -56,7 +56,7 @@
                                         </f:then>
                                         <f:else>
                                             <f:format.raw>
-                                                <f:translate key="folder.show.inherited_protection_no_conditions" arguments="{0 : '{folder.protection.folderObject.speakingName -> f:link.action(action : \'show\', arguments : \'{id : folder.protection.folderObject.combinedIdentifier}\')}'}" />
+                                                <f:translate key="folder.show.inherited_protection_no_conditions" arguments="{0 : '{inheritedFolder.speakingName -> f:link.action(action : \'show\', arguments : \'{id : inheritedFolder.combinedIdentifier}\')}'}" />
                                             </f:format.raw>
                                         </f:else>
                                     </f:if>
@@ -83,10 +83,10 @@
         <div class="panel-body">
             <f:if condition="{folder.ownProtection}">
                 <f:then>
-                    <f:link.action controller="Protection" action="edit" arguments="{protection : folder.ownProtection}" class="btn btn-default">
+                    <f:link.action controller="Protection" action="edit" arguments="{protectionUid : folder.ownProtection.uid, combinedIdentifier : folder.combinedIdentifier}" class="btn btn-default">
                         <core:icon identifier="actions-open" size="small" /> <f:translate key="folder.show.edit_protection" />
                     </f:link.action>
-                    <f:link.action controller="Protection" action="delete" arguments="{protection : folder.ownProtection}" class="btn btn-danger">
+                    <f:link.action controller="Protection" action="delete" arguments="{protectionUid : folder.ownProtection.uid, combinedIdentifier : folder.combinedIdentifier}" class="btn btn-danger">
                         <core:icon identifier="actions-edit-delete" size="small" /> <f:translate key="folder.show.delete_protection" />
                     </f:link.action>
                 </f:then>
