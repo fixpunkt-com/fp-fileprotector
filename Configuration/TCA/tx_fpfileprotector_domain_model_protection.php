@@ -10,6 +10,14 @@ return [
         'crdate' => 'crdate',
         'delete' => 'deleted',
         'searchFields' => 'folder',
+        // Protection rules are stored globally on the root level (pid=0), so no
+        // storage page needs to be configured. rootLevel=1 permits records on
+        // pid=0, and ignoreRootLevelRestriction lets non-admin backend users
+        // (the module is available to "user") create and edit them there.
+        'rootLevel' => 1,
+        'security' => [
+            'ignoreRootLevelRestriction' => true,
+        ],
         'iconfile' => 'EXT:fp_fileprotector/Resources/Public/Icons/Models/tx_fpfileprotector_domain_model_protection.svg',
     ],
     'palettes' => [

@@ -61,13 +61,13 @@ class ProtectionService
      *
      * @param array<string, mixed> $accessFields Raw access-type fields (keyed by TCA column)
      */
-    public function create(int $storage, string $folder, array $accessFields, int $pid = 0): int
+    public function create(int $storage, string $folder, array $accessFields): int
     {
         $placeholder = StringUtility::getUniqueId('NEW');
         $data = [
             self::TABLE => [
                 $placeholder => array_merge($this->sanitizeAccessFields($accessFields), [
-                    'pid' => $pid,
+                    'pid' => 0,
                     'storage' => $storage,
                     'folder' => $folder,
                 ]),

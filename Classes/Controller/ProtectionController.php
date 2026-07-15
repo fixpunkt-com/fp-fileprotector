@@ -13,7 +13,6 @@ use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -64,8 +63,7 @@ class ProtectionController extends ActionController
         $this->protectionService->create(
             $folder->getStorage()->getUid(),
             $folder->getIdentifier(),
-            $protection,
-            $this->getStoragePid()
+            $protection
         );
 
         $this->addFlashMessage(LocalizationUtility::translate(
@@ -122,16 +120,5 @@ class ProtectionController extends ActionController
             'FpFileprotector'
         ));
         return $this->redirect('show', 'Folder', null, ['id' => $combinedIdentifier, 'refreshFolderTree' => true]);
-    }
-
-    /**
-     * Returns the configured storage pid for new records (falls back to root).
-     */
-    protected function getStoragePid(): int
-    {
-        $framework = $this->configurationManager->getConfiguration(
-            ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK
-        );
-        return (int)($framework['persistence']['storagePid'] ?? 0);
     }
 }

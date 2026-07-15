@@ -144,24 +144,30 @@ Making the partials available to the backend module
 ----------------------------------------------------
 
 Because the partials live in your own extension, you have to tell the backend
-module where to find them. Add your partial folder to the module's
-``partialRootPaths`` in TypoScript. Use an index that is not already taken (for
-example ``100``) so you do not overwrite the paths shipped with
-fp-fileprotector:
+module where to find them. fp-fileprotector ships no TypoScript for this;
+instead use the TSconfig-based backend template override introduced in
+TYPO3 v12 (see `Feature #96812
+<https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/12.0/Feature-96812-OverrideBackendTemplatesWithTSconfig.html>`__).
+It registers an additional, higher-priority root path for the templates of a
+given extension.
+
+Add the following to your extension's :file:`Configuration/page.tsconfig`
+(automatically loaded) using the pattern
+``templates.<overridden-extension>.<unique> = <your-extension>:<entry-path>``.
+The key names the extension whose templates you extend
+(``fixpunkt/fp-fileprotector``), the number only has to be unique, and the value
+is your own composer package name followed by the path that contains your
+:file:`Partials/` folder:
 
 ..  code-block:: typoscript
-    :caption: Configuration/TypoScript/setup.typoscript
+    :caption: Configuration/page.tsconfig
 
-    module.tx_fpfileprotector {
-      view {
-        partialRootPaths {
-          100 = EXT:my_extension/Resources/Private/Partials/
-        }
-      }
-    }
+    templates.fixpunkt/fp-fileprotector.1643293191 = my_vendor/my_extension:Resources/Private
 
-The partial path returned by :php:`getPartials()` (e.g. ``Access/MyType``) is
-resolved relative to these ``partialRootPaths``.
+TYPO3 automatically appends the :file:`Templates/`, :file:`Partials/` and
+:file:`Layouts/` subdirectories. The partial path returned by
+:php:`getPartials()` (e.g. ``Access/MyType``) is therefore resolved to
+:file:`EXT:my_extension/Resources/Private/Partials/Access/MyType/` inside your extension.
 
 The TCA override (optional)
 ===========================
