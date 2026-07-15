@@ -10,8 +10,13 @@ CREATE TABLE sys_file_storage (
 CREATE TABLE tx_fpfileprotector_domain_model_protection (
     storage int(11) unsigned DEFAULT 0 NOT NULL,
     folder varchar(255) DEFAULT '' NOT NULL,
+);
+
+#
+# Table structure for table 'tx_fpfileprotector_domain_model_protection' for fe_login check
+#
+CREATE TABLE tx_fpfileprotector_domain_model_protection (
     fe_login tinyint(3) DEFAULT 0 NOT NULL,
-    be_login tinyint(3) DEFAULT 0 NOT NULL,
     user_groups int(11) unsigned DEFAULT 0 NOT NULL,
     users int(11) unsigned DEFAULT 0 NOT NULL,
 );
