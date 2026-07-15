@@ -6,7 +6,7 @@ services:
     public: true
 
   _instanceof:
-    Fixpunkt\FpFileprotector\Utility\Access\AccessUtilityInterface:
+    Fixpunkt\FpFileprotector\AccessType\AccessTypeInterface:
       tags:
         - { name: 'fp_fileprotector.access' }
 
@@ -16,9 +16,6 @@ services:
       - '../Classes/Domain/Model/*'
       - '../Classes/Resource/*'
       - '../Classes/Utility/*'
-
-  Fixpunkt\FpFileprotector\Utility\Access\:
-    resource: '../Classes/Utility/Access/*'
 
   # Utilities needed for DI
   Fixpunkt\FpFileprotector\Utility\FrontendUserUtility: ~

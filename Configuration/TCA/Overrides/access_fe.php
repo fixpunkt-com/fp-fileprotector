@@ -6,7 +6,7 @@ defined('TYPO3') or die();
 
 $table = 'tx_fpfileprotector_domain_model_protection';
 
-// Fields required for the FE access check (see FeLoginAccessUtility).
+// Fields required for the FE access check (see FeLoginAccessType).
 $tempColumns = [
     'fe_login' => [
         'label' => 'LLL:EXT:fp_fileprotector/Resources/Private/Language/locallang.xlf:tx_fpfileprotector_domain_model_protection.fe_login',

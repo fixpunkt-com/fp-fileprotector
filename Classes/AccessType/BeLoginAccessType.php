@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Fixpunkt\FpFileprotector\Utility\Access;
+namespace Fixpunkt\FpFileprotector\AccessType;
 
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 
-class BeLoginAccessUtility implements AccessUtilityInterface
+class BeLoginAccessType implements AccessTypeInterface
 {
     /** @param array<string, mixed> $protection Raw protection database record */
     public function isGranted(array $protection): bool

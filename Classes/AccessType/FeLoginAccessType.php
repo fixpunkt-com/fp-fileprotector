@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Fixpunkt\FpFileprotector\Utility\Access;
+namespace Fixpunkt\FpFileprotector\AccessType;
 
 use Doctrine\DBAL\ParameterType;
 use Fixpunkt\FpFileprotector\Utility\FrontendUserUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 
-class FeLoginAccessUtility implements AccessUtilityInterface
+class FeLoginAccessType implements AccessTypeInterface
 {
     private const USERS_MM = 'tx_fpfileprotector_protection_feusers_mm';
     private const GROUPS_MM = 'tx_fpfileprotector_protection_fegroups_mm';
