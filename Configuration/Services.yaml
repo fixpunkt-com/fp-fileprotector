@@ -15,10 +15,7 @@ services:
     exclude:
       - '../Classes/Domain/Model/*'
       - '../Classes/Resource/*'
-      - '../Classes/Utility/*'
-
-  # Utilities needed for DI
-  Fixpunkt\FpFileprotector\Utility\FrontendUserUtility: ~
+      - '../Classes/Utility/HtaccessUtility.php'
 
   # Inject all tagged access utilities into AccessService
   Fixpunkt\FpFileprotector\Service\AccessService:
