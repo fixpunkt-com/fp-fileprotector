@@ -37,7 +37,7 @@
 				<source>Folder</source>
 			</trans-unit>
 			<trans-unit id="tx_fpfileprotector_domain_model_protection.fe_login">
-				<source>Must be logged in to the frontend</source>
+				<source>Enable access for frontend users</source>
 			</trans-unit>
 			<trans-unit id="tx_fpfileprotector_domain_model_protection.user_groups">
 				<source>User Groups</source>
@@ -45,8 +45,18 @@
 			<trans-unit id="tx_fpfileprotector_domain_model_protection.users">
 				<source>Users</source>
 			</trans-unit>
-			<trans-unit id="tx_fpfileprotector_domain_model_protection.be_login">
-				<source>Must be logged in to the backend</source>
+
+			<!-- Fe Login -->
+			<trans-unit id="access_type.fe_login">
+				<source>Access granted via frontend login</source>
+			</trans-unit>
+
+			<!-- Be Login -->
+			<trans-unit id="access_type.be_login">
+				<source>Access granted via backend login</source>
+			</trans-unit>
+			<trans-unit id="access_type.be_login.description">
+				<source>The access is granted on base of access rules given for the backend user and the groups that the user belongs to.</source>
 			</trans-unit>
 
 			<!-- General -->

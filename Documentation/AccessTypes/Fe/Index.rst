@@ -15,7 +15,7 @@ How it works
 
 The access type evaluates the protection record in the following order:
 
-#.  If the *Must be logged in to the frontend* option is **disabled** for the
+#.  If the *Enable access for frontend users* option is **disabled** for the
     folder, the frontend access type never grants access.
 
 #.  If no frontend user is currently logged in, access is denied.
@@ -36,7 +36,7 @@ Configuration
 The relevant fields are configured directly on the access rule in the
 **File Protection** backend module:
 
-..  confval:: Must be logged in to the frontend
+..  confval:: Enable access for frontend users
     :name: access-type-fe-fe-login
 
     Master switch for this access type. If disabled, none of the fields below

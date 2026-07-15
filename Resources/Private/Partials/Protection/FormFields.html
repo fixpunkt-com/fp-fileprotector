@@ -1,3 +1,10 @@
-<f:for each="{accessPartials}" as="partial">
-  <f:render partial="{partial}/Edit" arguments="{_all}" />
+<f:for each="{accessPartials}" as="partial" iteration="iter">
+    <div class="{f:if(condition : iter.isLast, else : 'mb-3')}">
+        <f:render partial="{partial}/Edit" arguments="{_all}" />
+    </div>
+    <f:if condition="!{iter.isLast}">
+        <div class="mb-3">
+            <hr>
+        </div>
+    </f:if>
 </f:for>
