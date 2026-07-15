@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fixpunkt\FpFileprotector\Middleware;
 
-use Fixpunkt\FpFileprotector\Domain\Repository\ProtectionRepository;
+use Fixpunkt\FpFileprotector\Service\AccessService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -16,10 +16,11 @@ use TYPO3\CMS\Core\Resource\ProcessedFile;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Resource\StorageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class AccessMiddleware implements MiddlewareInterface
 {
+    public function __construct(private readonly AccessService $accessService) {}
+
     public function process(
         ServerRequestInterface $request,
         RequestHandlerInterface $handler
@@ -44,7 +45,7 @@ class AccessMiddleware implements MiddlewareInterface
 
         $storage = $this->getStorage($storageIdentifier);
         if (!$storage) {
-            return $this->createError(LocalizationUtility::translate('sys_file_storage.errors.storage_not_found', 'FpFileprotector'));
+            return $this->createError('The storage could not be found.');
         }
         $protected = $storage->getStorageRecord()['protected'];
         $protectedByDefault = $storage->getStorageRecord()['protected_by_default'];
@@ -65,11 +66,11 @@ class AccessMiddleware implements MiddlewareInterface
                 )
             )
         ) {
-            return $this->createError(LocalizationUtility::translate('sys_file_storage.errors.file_not_found', 'FpFileprotector'));
+            return $this->createError('The file could not be found.');
         }
         $originalFile = $file;
         if ($originalFile instanceof ProcessedFile) {
-            $originalFile = $file->getOriginalFile();
+            $originalFile = $originalFile->getOriginalFile();
         }
 
         if (!$protected) {
@@ -77,15 +78,12 @@ class AccessMiddleware implements MiddlewareInterface
         }
 
         $folder = $originalFile->getParentFolder();
-        if (!$folder) {
-            return $this->createError(LocalizationUtility::translate('sys_file_storage.errors.folder_not_found', 'FpFileprotector'));
-        }
 
-        $protection = ProtectionRepository::getProtectionStatic($folder);
-        if ((!$protection && !$protectedByDefault) || ($protection && $protection->isGranted())) {
+        $protection = $this->accessService->getProtection($folder);
+        if ((!$protection && !$protectedByDefault) || ($protection && $this->accessService->isGranted($protection))) {
             return $this->releaseFile($storage, $filePath);
         }
-        return $this->createError(LocalizationUtility::translate('sys_file_storage.errors.access_denied', 'FpFileprotector'), 500);
+        return $this->createError('You do not have permission to access this file.', 500);
     }
 
     /**
@@ -133,9 +131,6 @@ class AccessMiddleware implements MiddlewareInterface
     private function releaseFile(ResourceStorage $storage, string $fileIdentifier): Response
     {
         $file = $storage->getFile($fileIdentifier);
-        if (!$file) {
-            return $this->createError(LocalizationUtility::translate('sys_file_storage.errors.file_release_not_found', 'FpFileprotector'));
-        }
 
         $body = new Stream('php://temp', 'rw');
         $body->write($file->getContents());

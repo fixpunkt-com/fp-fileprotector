@@ -47,8 +47,8 @@
 				<target>Ordner</target>
 			</trans-unit>
 			<trans-unit id="tx_fpfileprotector_domain_model_protection.fe_login">
-				<source>Must be logged in to the frontend</source>
-				<target>Muss im Frontend eingeloggt sein</target>
+				<source>Enable access for frontend users</source>
+				<target>Zugriff für Frontend User gewähren</target>
 			</trans-unit>
 			<trans-unit id="tx_fpfileprotector_domain_model_protection.user_groups">
 				<source>User Groups</source>
@@ -58,9 +58,21 @@
 				<source>Users</source>
 				<target>Benutzer:innen</target>
 			</trans-unit>
-			<trans-unit id="tx_fpfileprotector_domain_model_protection.be_login">
-				<source>Must be logged in to the backend</source>
-				<target>Muss im Backend eingeloggt sein</target>
+
+			<!-- Fe Login -->
+			<trans-unit id="access_type.fe_login">
+				<source>Access granted via frontend login</source>
+				<target>Zugriff via Frontend Login</target>
+			</trans-unit>
+
+			<!-- Be Login -->
+			<trans-unit id="access_type.be_login">
+				<source>Access granted via backend login</source>
+				<target>Zugriff via Backend Login</target>
+			</trans-unit>
+			<trans-unit id="access_type.be_login.description">
+				<source>The access is granted on base of access rules given for the backend user and the groups that the user belongs to.</source>
+				<target>Der Zugriff wird auf Basis der Berechtigungen des Backend-Users und der Berechtigungen ihrer:seiner Gruppen gewährt.</target>
 			</trans-unit>
 
 			<!-- General -->

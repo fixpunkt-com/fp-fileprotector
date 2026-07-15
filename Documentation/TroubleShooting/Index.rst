@@ -26,7 +26,7 @@ files (:bash:`AllowOverride All`).
 User groups and/or users are being ignored
 ==========================================
 
-Check whether the option **Must be logged in on the frontend** is enabled in
+Check whether the option **Enable access for frontend users** is enabled in
 the access rule. Without this checkbox, group and user restrictions have no
 effect.
 

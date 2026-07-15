@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Fixpunkt\FpFileprotector\Resource;
 
-use Fixpunkt\FpFileprotector\Domain\Model\Protection;
-use Fixpunkt\FpFileprotector\Domain\Repository\ProtectionRepository;
+use Fixpunkt\FpFileprotector\Service\AccessService;
+use Fixpunkt\FpFileprotector\Service\ProtectionService;
 use TYPO3\CMS\Core\Resource as Core;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -14,27 +14,40 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class Folder extends Core\Folder
 {
-    /** @var ResourceStorage */
-    protected $storage;
+    /**
+     * Returns the storage this folder belongs to.
+     *
+     * The core storage is XCLASSed to our subclass (see ext_localconf.php),
+     * so we can safely narrow the return type.
+     */
+    public function getStorage(): ResourceStorage
+    {
+        $storage = parent::getStorage();
+        if (!$storage instanceof ResourceStorage) {
+            throw new \RuntimeException(
+                'Expected an instance of ' . ResourceStorage::class . ', got ' . $storage::class . '.',
+                1752480000
+            );
+        }
+        return $storage;
+    }
 
     /**
-     * Returns protection for this folder or one of its parent folders.
+     * Returns the raw protection record for this folder or one of its parent
+     * folders.
      *
-     * @param bool $recursive
-     * @return Protection|null
+     * @return array<string, mixed>|null
      */
-    public function getProtection(bool $recursive = true): ?Protection
+    public function getProtection(bool $recursive = true): ?array
     {
-        /** @var ProtectionRepository $protectionRepository */
-        $protectionRepository = GeneralUtility::makeInstance(ProtectionRepository::class);
-        return $protectionRepository->getProtection($this, $recursive);
+        return GeneralUtility::makeInstance(ProtectionService::class)->getRecord($this, $recursive);
     }
     /**
-     * Returns protection assigned directly to this folder.
+     * Returns the raw protection record assigned directly to this folder.
      *
-     * @return Protection|null
+     * @return array<string, mixed>|null
      */
-    public function getOwnProtection(): ?Protection
+    public function getOwnProtection(): ?array
     {
         return $this->getProtection(false);
     }
@@ -65,13 +78,17 @@ class Folder extends Core\Folder
     public function getProtectionStatus(): string
     {
         $protection = $this->getProtection();
-        if ($protection && $protection->isProtected()) {
-            // protection is set
-            return $this->getOwnProtection() ? 'protected' : 'protected_by_parent';
-        } else {
-            // no protection is set
-            return $this->storage->isProtectedByDefault() ? 'no_access' : 'public';
+        if ($protection) {
+            // A rule applies: "protected" means the current user is granted
+            // access by at least one access utility; otherwise it is locked.
+            if (GeneralUtility::makeInstance(AccessService::class)->isGranted($protection)) {
+                return $this->getOwnProtection() ? 'protected' : 'protected_by_parent';
+            }
+            return 'no_access';
         }
+        // no rule applies
+        return $this->getStorage()->isProtectedByDefault() ? 'no_access' : 'public';
+
     }
 
     /**

@@ -3,9 +3,8 @@
 <f:section name="Content">
     <h2><f:translate key="folder.show.heading" /> <span class="text-info">{folder.name}</span> <f:translate key="protection.new.heading_suffix" /></h2>
 
-    <f:form action="create" object="{protection}" objectName="protection">
-        <f:form.hidden property="storage" value="{folder.storage.uid}" />
-        <f:form.hidden property="folder" value="{folder.identifier}" />
+    <f:form action="create">
+        <f:form.hidden name="combinedIdentifier" value="{folder.combinedIdentifier}" />
 
         <f:render partial="Protection/FormFields" arguments="{_all}" />
 

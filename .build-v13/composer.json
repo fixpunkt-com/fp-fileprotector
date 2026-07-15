@@ -1,0 +1,26 @@
+{
+  "name": "fixpunkt/fp-fileprotector-cs-tools-v13",
+  "description": "Isolated dev tooling (coding standards + static analysis) for fp_fileprotector — not part of the extension package. Mirror of .build/ but pinned to the v13 line.",
+  "autoload": {
+    "psr-4": {
+      "Fixpunkt\\FpFileprotector\\": "../Classes/"
+    }
+  },
+  "require-dev": {
+    "phpstan/extension-installer": "^1.4",
+    "saschaegerer/phpstan-typo3": "^2.1",
+    "typo3/cms-core": "^13.4",
+	  "typo3/cms-extbase": "*",
+	  "typo3/cms-fluid": "*",
+	  "typo3/cms-frontend": "*",
+	  "typo3/cms-backend": "*",
+	  "typo3/cms-install": "*"
+  },
+  "config": {
+    "allow-plugins": {
+      "typo3/class-alias-loader": true,
+      "typo3/cms-composer-installers": true,
+      "phpstan/extension-installer": true
+    }
+  }
+}

@@ -5,12 +5,22 @@ services:
     autoconfigure: true
     public: true
 
+  _instanceof:
+    Fixpunkt\FpFileprotector\AccessType\AccessTypeInterface:
+      tags:
+        - { name: 'fp_fileprotector.access' }
+
   Fixpunkt\FpFileprotector\:
     resource: '../Classes/*'
     exclude:
       - '../Classes/Domain/Model/*'
       - '../Classes/Resource/*'
-      - '../Classes/Utility/*'
+      - '../Classes/Utility/HtaccessUtility.php'
+
+  # Inject all tagged access utilities into AccessService
+  Fixpunkt\FpFileprotector\Service\AccessService:
+    arguments:
+      $accessTypes: !tagged_iterator 'fp_fileprotector.access'
 
   Fixpunkt\FpFileprotector\EventListener\ModifyIconForResourcePropertiesListener:
     tags:

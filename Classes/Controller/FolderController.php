@@ -6,6 +6,8 @@ namespace Fixpunkt\FpFileprotector\Controller;
 
 use Fixpunkt\FpFileprotector\Domain\Repository\FolderRepository;
 use Fixpunkt\FpFileprotector\Resource\Folder;
+use Fixpunkt\FpFileprotector\Service\AccessService;
+use Fixpunkt\FpFileprotector\Service\ProtectionService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
@@ -29,6 +31,8 @@ class FolderController extends ActionController
         protected readonly IconFactory $iconFactory,
         protected readonly FolderRepository $folderRepository,
         protected readonly StorageRepository $storageRepository,
+        protected readonly AccessService $accessService,
+        protected readonly ProtectionService $protectionService,
     ) {}
 
     /**
@@ -37,7 +41,7 @@ class FolderController extends ActionController
      * @param string $id
      * @return ResponseInterface
      */
-    public function showAction(string $id = "", bool $refreshFolderTree = false): ResponseInterface
+    public function showAction(string $id = '', bool $refreshFolderTree = false): ResponseInterface
     {
         // modify id or redirect to first folder
         $id = $this->modifyId($id);
@@ -56,15 +60,37 @@ class FolderController extends ActionController
         $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
         $this->initializeDocHeader($moduleTemplate, $folder);
         $this->statusCheck($folder);
-        $moduleTemplate->assign('folder', $folder);
+
+        $protection = $folder->getProtection();
+        $moduleTemplate->assignMultiple([
+            'folder' => $folder,
+            'accessPartials' => $this->accessService->getPartials(),
+            'protectionDisplay' => $protection ? $this->protectionService->getDisplayValues((int)$protection['uid']) : [],
+            'inheritedFolder' => $this->getInheritedFolder($folder, $protection),
+        ]);
         return $moduleTemplate->renderResponse('Folder/Show');
+    }
+
+    /**
+     * Returns the folder an inherited protection originates from, or null when
+     * the folder has its own (or no) protection.
+     *
+     * @param array<string, mixed>|null $protection
+     */
+    protected function getInheritedFolder(Folder $folder, ?array $protection): ?Folder
+    {
+        if ($protection === null || $folder->getOwnProtection() !== null) {
+            return null;
+        }
+        $combinedIdentifier = $protection['storage'] . ':' . $protection['folder'];
+        return $this->folderRepository->findOneByCombinedIdentifier($combinedIdentifier);
     }
 
     protected function statusCheck(Folder $folder): void
     {
         // show information if the storage is NOT protected
         if (!$folder->getStorage()->isProtected()) {
-            if ($folder->isProtected()) {
+            if ($folder->getProtection() !== null) {
                 $this->addFlashMessage(
                     LocalizationUtility::translate('folder.show.storage_not_protected_with_rule', 'FpFileprotector'),
                     LocalizationUtility::translate('folder.show.storage_not_protected', 'FpFileprotector'),
@@ -88,16 +114,15 @@ class FolderController extends ActionController
      *
      * @param ModuleTemplate $moduleTemplate
      * @param Folder $folder
-     * @return void
      */
     protected function initializeDocHeader(ModuleTemplate $moduleTemplate, Folder $folder): void
     {
         $moduleTemplate->getDocHeaderComponent()->setMetaInformationForResource($folder);
 
         $editStorageUri = $this->uriBuilder->reset()
-            ->uriFor('edit', ['fileStorageUid' => $folder->getStorage()->getUid()], 'FileStorage');
+            ->uriFor('edit', ['fileStorageUid' => $folder->getStorage()->getUid(), 'id' => $folder->getCombinedIdentifier()], 'FileStorage');
         $htaccessUri = $this->uriBuilder->reset()
-            ->uriFor('htaccess', ['fileStorageUid' => $folder->getStorage()->getUid()], 'FileStorage');
+            ->uriFor('htaccess', ['fileStorageUid' => $folder->getStorage()->getUid(), 'id' => $folder->getCombinedIdentifier()], 'FileStorage');
 
         // add buttons
         $buttonBar = $moduleTemplate->getDocHeaderComponent()->getButtonBar();
@@ -114,17 +139,19 @@ class FolderController extends ActionController
                 ->setIcon($this->iconFactory->getIcon('tx-fpfileprotector-folder-public'))
                 ->setLabel(LocalizationUtility::translate('module.storage_is_unprotected', 'FpFileprotector'));
         }
+        $storageSettingsItem = GeneralUtility::makeInstance(DropDownItem::class);
+        $storageSettingsItem
+            ->setLabel(LocalizationUtility::translate('module.dropdown.storage_settings', 'FpFileprotector'))
+            ->setHref($editStorageUri);
+
+        $htaccessItem = GeneralUtility::makeInstance(DropDownItem::class);
+        $htaccessItem
+            ->setLabel(LocalizationUtility::translate('module.dropdown.htaccess_update', 'FpFileprotector'))
+            ->setHref($htaccessUri);
+
         $dropdownButton
-        ->addItem(
-            GeneralUtility::makeInstance(DropDownItem::class)
-                ->setLabel(LocalizationUtility::translate('module.dropdown.storage_settings', 'FpFileprotector'))
-                ->setHref($editStorageUri)
-        )
-        ->addItem(
-            GeneralUtility::makeInstance(DropDownItem::class)
-                ->setLabel(LocalizationUtility::translate('module.dropdown.htaccess_update', 'FpFileprotector'))
-                ->setHref($htaccessUri)
-        );
+            ->addItem($storageSettingsItem)
+            ->addItem($htaccessItem);
         $buttonBar->addButton($dropdownButton, ButtonBar::BUTTON_POSITION_RIGHT);
     }
 
@@ -154,8 +181,8 @@ class FolderController extends ActionController
             $moduleData->set('id', $id);
             $GLOBALS['BE_USER']->pushModuleData($moduleData->getModuleIdentifier(), $moduleData->toArray());
             return $id;
-        } else {
-            return $moduleData->get('id', '');
         }
+        return $moduleData->get('id', '');
+
     }
 }

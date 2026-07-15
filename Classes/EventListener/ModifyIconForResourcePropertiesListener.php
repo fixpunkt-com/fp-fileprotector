@@ -7,7 +7,6 @@ namespace Fixpunkt\FpFileprotector\EventListener;
 use Fixpunkt\FpFileprotector\Resource\Folder;
 use Fixpunkt\FpFileprotector\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Imaging\Event\ModifyIconForResourcePropertiesEvent;
-use TYPO3\CMS\Core\Resource\ResourceInterface;
 
 class ModifyIconForResourcePropertiesListener
 {

@@ -64,6 +64,20 @@ and folders
         ..  card-footer:: :ref:`Learn how fp-fileprotector is used <usage>`
             :button-style: btn btn-secondary stretched-link
 
+    ..  card:: Access Types
+
+        How the frontend and backend access types work.
+
+        ..  card-footer:: :ref:`Understand the access types <access-types>`
+            :button-style: btn btn-secondary stretched-link
+
+    ..  card:: For Developers
+
+        How to extend fp-fileprotector with your own access types.
+
+        ..  card-footer:: :ref:`Extend fp-fileprotector <for-developers>`
+            :button-style: btn btn-secondary stretched-link
+
     ..  card:: Troubleshooting
 
         Common issues and solutions.
@@ -76,6 +90,8 @@ and folders
 
     Introduction/Index
     Usage/Index
+    AccessTypes/Index
+    ForDevelopers/Index
     TroubleShooting/Index
     FuturePlans/Index
     Sitemap

@@ -41,26 +41,8 @@ Creating or Editing a Protection Rule
 Select who is allowed to access the contents of the respective folder (including subfolders).
 
 ..  note::
-    The selection of groups and users is an **OR** conjunction. Both members
-    of the selected groups and the individually selected users will have access.
-    Also the selection of frontend and backend access is an **OR** conjunction.
+    All conditions are combined with an **OR** conjunction: a visitor is granted
+    access as soon as any one of them is satisfied.
 
-..  confval:: Must be logged in to the frontend
-
-    If enabled, all users logged into a frontend account can access the folder. To restrict access to specific users or groups, use the **Frontend Users** and **Frontend User Groups** options below.
-
-..  confval:: Frontend Users
-
-    Select users, which are allowed to access the folder. This selection is an **OR** conjunction.
-
-    This option only applies, if *Must be logged in to the frontend* is enabled!
-
-..  confval:: Frontend User Groups
-
-    Select user groups, which are allowed to access the folder. This selection is an **OR** conjunction.
-
-    This option only applies, if *Must be logged in to the frontend* is enabled!
-
-..  confval:: Must be logged in to the backend
-
-    If enabled, all users, that are logged into an backend account can access the folder.
+The available conditions are provided by the :ref:`access types <access-types>`.
+See there for a detailed explanation of each condition and how it is evaluated.

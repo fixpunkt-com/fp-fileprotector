@@ -7,12 +7,14 @@ vendor/
 vendor/*
 Documentation-GENERATED-temp/
 Documentation-GENERATED-temp/*
+.php-cs-fixer.cache
 
 .env
 public
 public/*
 index.html
 composer.lock
+.DS_Store
 
 
 # User-specific stuff:
