@@ -4,10 +4,10 @@ The extension **fp-fileprotector** allows you to restrict access to file storage
 
 ## Features
 
-- Protect TYPO3 file storages from public access
-- Define access rules per folder with inheritance to subfolders
-- Restrict access based on frontend login, user groups, or individual users
-- Whitelist and blacklist modes
+- **Secure file protection through `.htaccess` and middleware** — protected files are shielded at the web server level and served through a TYPO3 middleware that enforces access on every request.
+- **File access based on backend user permissions** — backend users reach exactly those protected files they are already allowed to see and manage in the TYPO3 file list, reusing their existing file mount and storage permissions.
+- **File access based on frontend users and groups** — grant access to logged-in frontend users, optionally limited to specific users or user groups.
+- **Above all: easy extensibility with your own access types** — add custom access rules with just a small class and a partial, without touching the extension's core. See the [developer documentation](Documentation/ForDevelopers/Index.rst).
 
 ## Requirements
 
