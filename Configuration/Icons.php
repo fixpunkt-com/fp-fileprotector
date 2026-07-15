@@ -4,12 +4,21 @@ declare(strict_types=1);
 
 use TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider;
 use TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider;
+use TYPO3\CMS\Core\Information\Typo3Version;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-return [
-    'tx-fpfileprotector-module' => [
+$moduleIcon = (GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion() >= 14)
+    ? [
+        'provider' => SvgIconProvider::class,
+        'source' => 'EXT:fp_fileprotector/Resources/Public/Icons/Modules/protection.svg',
+    ]
+    : [
         'provider' => BitmapIconProvider::class,
         'source' => 'EXT:fp_fileprotector/Resources/Public/Icons/Modules/protection.jpg',
-    ],
+    ];
+
+return [
+    'tx-fpfileprotector-module' => $moduleIcon,
 
     // Icons for Folder-Tree
 
