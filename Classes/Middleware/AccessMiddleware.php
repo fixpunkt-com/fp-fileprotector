@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Fixpunkt\FpFileprotector\Middleware;
 
-use Fixpunkt\FpFileprotector\Domain\Repository\ProtectionRepository;
 use Fixpunkt\FpFileprotector\Service\AccessService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -80,7 +79,7 @@ class AccessMiddleware implements MiddlewareInterface
 
         $folder = $originalFile->getParentFolder();
 
-        $protection = ProtectionRepository::getProtectionStatic($folder);
+        $protection = $this->accessService->getProtection($folder);
         if ((!$protection && !$protectedByDefault) || ($protection && $this->accessService->isGranted($protection))) {
             return $this->releaseFile($storage, $filePath);
         }

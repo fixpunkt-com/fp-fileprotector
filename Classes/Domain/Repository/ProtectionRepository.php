@@ -4,13 +4,9 @@ declare(strict_types=1);
 
 namespace Fixpunkt\FpFileprotector\Domain\Repository;
 
-use Doctrine\DBAL\ParameterType;
 use Fixpunkt\FpFileprotector\Domain\Model\Protection;
 use Fixpunkt\FpFileprotector\Resource\Folder;
-use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Resource\FolderInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
 class ProtectionRepository extends Repository
@@ -50,38 +46,6 @@ class ProtectionRepository extends Repository
         // hasParentFolder() only exists on our XCLASSed Folder subclass.
         if (!$protection && $recursive && $folder instanceof Folder && $folder->hasParentFolder()) {
             return $this->getProtection($folder->getParentFolder());
-        }
-        return $protection;
-    }
-
-    /**
-     * Static function to get protection data for middleware.
-     * Injecting the repository itself into the middleware caused errors in some instances.
-     *
-     * @param FolderInterface $folder
-     * @return Protection|null
-     */
-    public static function getProtectionStatic(FolderInterface $folder): ?Protection
-    {
-        // find protection data from database
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_fpfileprotector_domain_model_protection');
-        $statement = $queryBuilder
-            ->select('*')
-            ->from('tx_fpfileprotector_domain_model_protection')
-            ->where(
-                $queryBuilder->expr()->eq('storage', $queryBuilder->createNamedParameter($folder->getStorage()->getUid(), ParameterType::INTEGER)),
-                $queryBuilder->expr()->eq('folder', $queryBuilder->createNamedParameter($folder->getIdentifier()))
-            )
-            ->executeQuery();
-
-        // Convert data to object and return
-        $dataMapper = GeneralUtility::makeInstance(DataMapper::class);
-        $protections = $dataMapper->map(Protection::class, $statement->fetchAllAssociative());
-        $protection = count($protections) ? $protections[0] : null;
-
-        // hasParentFolder() only exists on our XCLASSed Folder subclass.
-        if (!$protection && $folder instanceof Folder && $folder->hasParentFolder()) {
-            return self::getProtectionStatic($folder->getParentFolder());
         }
         return $protection;
     }

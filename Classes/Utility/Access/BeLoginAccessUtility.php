@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Fixpunkt\FpFileprotector\Utility\Access;
 
-use Fixpunkt\FpFileprotector\Domain\Model\Protection;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 
 class BeLoginAccessUtility implements AccessUtilityInterface
 {
-    public function isGranted(Protection $protection): bool
+    /** @param array<string, mixed> $protection Raw protection database record */
+    public function isGranted(array $protection): bool
     {
         /** @var BackendUserAuthentication|null $beUser */
         $beUser = $GLOBALS['BE_USER'] ?? null;
@@ -22,11 +22,11 @@ class BeLoginAccessUtility implements AccessUtilityInterface
         }
 
         foreach ($beUser->getFileStorages() as $storage) {
-            if ($storage->getUid() !== $protection->getStorage()) {
+            if ($storage->getUid() !== (int)$protection['storage']) {
                 continue;
             }
             try {
-                $folder = $storage->getFolder($protection->getFolder());
+                $folder = $storage->getFolder((string)$protection['folder']);
                 return $storage->isWithinFileMountBoundaries($folder, false);
             } catch (\Exception) {
                 return false;
