@@ -56,15 +56,15 @@ class ProtectionController extends ActionController
     /**
      * Creates a new folder protection.
      *
-     * @param array<string, mixed> $access Raw access-type fields keyed by TCA column
+     * @param array<string, mixed> $protection Raw access-type fields keyed by TCA column
      */
-    public function createAction(string $combinedIdentifier, array $access = []): ResponseInterface
+    public function createAction(string $combinedIdentifier, array $protection = []): ResponseInterface
     {
         $folder = $this->folderRepository->findOneByCombinedIdentifier($combinedIdentifier);
         $this->protectionService->create(
             $folder->getStorage()->getUid(),
             $folder->getIdentifier(),
-            $access,
+            $protection,
             $this->getStoragePid()
         );
 
@@ -97,11 +97,11 @@ class ProtectionController extends ActionController
     /**
      * Updates an existing folder protection.
      *
-     * @param array<string, mixed> $access Raw access-type fields keyed by TCA column
+     * @param array<string, mixed> $protection Raw access-type fields keyed by TCA column
      */
-    public function updateAction(int $protectionUid, string $combinedIdentifier, array $access = []): ResponseInterface
+    public function updateAction(int $protectionUid, string $combinedIdentifier, array $protection = []): ResponseInterface
     {
-        $this->protectionService->update($protectionUid, $access);
+        $this->protectionService->update($protectionUid, $protection);
 
         $this->addFlashMessage(LocalizationUtility::translate(
             'tx_fpfileprotector_domain_model_protection.flashmessages.updated',
