@@ -60,7 +60,7 @@ class FolderController extends ActionController
         $this->statusCheck($folder);
         $moduleTemplate->assignMultiple([
             'folder' => $folder,
-            'propertiesPartials' => $this->accessService->getPropertiesPartials(),
+            'partials' => $this->accessService->getPartials(),
         ]);
         return $moduleTemplate->renderResponse('Folder/Show');
     }

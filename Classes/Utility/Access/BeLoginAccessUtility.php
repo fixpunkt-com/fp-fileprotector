@@ -36,13 +36,8 @@ class BeLoginAccessUtility implements AccessUtilityInterface
         return false;
     }
 
-    public function getPartial(): string
+    public function getPartials(): string
     {
         return 'Access/Be';
-    }
-
-    public function getPropertiesPartial(): string
-    {
-        return 'Properties/Be';
     }
 }

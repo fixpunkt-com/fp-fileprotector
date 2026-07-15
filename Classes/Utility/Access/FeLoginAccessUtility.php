@@ -71,13 +71,8 @@ class FeLoginAccessUtility implements AccessUtilityInterface
         return array_map('intval', $uids);
     }
 
-    public function getPartial(): string
+    public function getPartials(): string
     {
         return 'Access/Fe';
-    }
-
-    public function getPropertiesPartial(): string
-    {
-        return 'Properties/Fe';
     }
 }
