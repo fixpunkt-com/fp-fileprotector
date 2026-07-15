@@ -2,7 +2,7 @@
 
 $EM_CONF[$_EXTKEY] = [
     'title' => 'File Protector',
-    'description' => 'Restricts access to file storages based on frontend login, user groups, or backend session.',
+    'description' => 'Restricts access to file storages based on frontend login, user groups, or backend session. Also allows to easily add new access rules via own access classes.',
     'category' => 'fe',
     'state' => 'stable',
     'author' => 'fixpunkt für digitales GmbH',
