@@ -60,8 +60,5 @@ jobs:
           composer global require typo3/tailor --prefer-dist --no-progress
           echo "$(composer global config bin-dir --absolute)" >> "$GITHUB_PATH"
 
-      - name: Sync version into ext_emconf.php
-        run: tailor set-version ${{ env.version }}
-
       - name: Publish to TER
         run: tailor ter:publish --comment "${{ env.comment }}" ${{ env.version }}
